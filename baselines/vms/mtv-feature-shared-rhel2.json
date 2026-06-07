@@ -1,0 +1,116 @@
+{
+  "meta": {
+    "vm_name": "mtv-feature-shared-rhel2",
+    "baseline_version": "1.1",
+    "captured_at": "2026-06-05T23:26:59.239485+00:00",
+    "description": ""
+  },
+  "guest_os": {
+    "guest_id": "rhel8_64Guest",
+    "guest_full_name": "Red Hat Enterprise Linux 8 (64-bit)",
+    "os_family": "linuxGuest"
+  },
+  "hardware": {
+    "hw_version": "vmx-17",
+    "firmware": "efi",
+    "num_cpu": 1,
+    "memory_mb": 2048
+  },
+  "storage": {
+    "controllers": [
+      {
+        "type": "vim.vm.device.ParaVirtualSCSIController",
+        "bus_number": 0,
+        "bus_sharing": "noSharing"
+      },
+      {
+        "type": "vim.vm.device.ParaVirtualSCSIController",
+        "bus_number": 1,
+        "bus_sharing": "virtualSharing"
+      },
+      {
+        "type": "vim.vm.device.VirtualAHCIController",
+        "bus_number": 0,
+        "bus_sharing": "noSharing"
+      }
+    ],
+    "disks": [
+      {
+        "label": "Hard disk 1",
+        "capacity_gb": 16.0,
+        "controller_bus": 0,
+        "unit_number": 0,
+        "provisioning": "thick-lazy",
+        "disk_mode": "persistent"
+      },
+      {
+        "label": "Hard disk 2",
+        "capacity_gb": 0.29,
+        "controller_bus": 0,
+        "unit_number": 1,
+        "provisioning": "thin",
+        "disk_mode": "persistent"
+      },
+      {
+        "label": "Hard disk 3",
+        "capacity_gb": 0.49,
+        "controller_bus": 1,
+        "unit_number": 0,
+        "provisioning": "thick-eager",
+        "disk_mode": "persistent"
+      }
+    ]
+  },
+  "network": {
+    "nics": [
+      {
+        "label": "Network adapter 1",
+        "adapter_type": "vim.vm.device.VirtualVmxnet3",
+        "network_name": "VM Network"
+      }
+    ]
+  },
+  "advanced": {
+    "cbt_enabled": false
+  },
+  "guest_runtime": {
+    "ip_config": [
+      {
+        "nic_label": "Network adapter 1",
+        "ip_addresses": [
+          {
+            "address": "10.6.46.223",
+            "prefix_length": 24,
+            "origin": ""
+          },
+          {
+            "address": "2620:52:9:162e:45c2:8aee:342a:67dd",
+            "prefix_length": 64,
+            "origin": ""
+          }
+        ],
+        "gateway": "10.6.46.254"
+      }
+    ]
+  },
+  "shared_disk_groups": [
+    {
+      "participating_vms": [
+        "mtv-feature-shared-rhel1",
+        "mtv-feature-shared-rhel2"
+      ],
+      "scsi_positions": [
+        {
+          "vm": "mtv-feature-shared-rhel1",
+          "bus": 1,
+          "unit": 0
+        },
+        {
+          "vm": "mtv-feature-shared-rhel2",
+          "bus": 1,
+          "unit": 0
+        }
+      ]
+    }
+  ]
+}

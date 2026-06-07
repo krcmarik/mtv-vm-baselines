@@ -1,0 +1,113 @@
+{
+  "meta": {
+    "vm_name": "mtv-win2019-3disks",
+    "baseline_version": "1.1",
+    "captured_at": "2026-06-05T23:24:57.524481+00:00",
+    "description": ""
+  },
+  "guest_os": {
+    "guest_id": "windows8Server64Guest",
+    "guest_full_name": "Microsoft Windows Server 2012 (64-bit)",
+    "os_family": "windowsGuest"
+  },
+  "hardware": {
+    "hw_version": "vmx-17",
+    "firmware": "bios",
+    "num_cpu": 2,
+    "memory_mb": 2048
+  },
+  "storage": {
+    "controllers": [
+      {
+        "type": "vim.vm.device.VirtualLsiLogicSASController",
+        "bus_number": 0,
+        "bus_sharing": "noSharing"
+      },
+      {
+        "type": "vim.vm.device.VirtualAHCIController",
+        "bus_number": 0,
+        "bus_sharing": "noSharing"
+      }
+    ],
+    "disks": [
+      {
+        "label": "Hard disk 1",
+        "capacity_gb": 13.0,
+        "controller_bus": 0,
+        "unit_number": 0,
+        "provisioning": "thin",
+        "disk_mode": "persistent"
+      },
+      {
+        "label": "Hard disk 2",
+        "capacity_gb": 4.0,
+        "controller_bus": 0,
+        "unit_number": 1,
+        "provisioning": "thin",
+        "disk_mode": "persistent"
+      },
+      {
+        "label": "Hard disk 3",
+        "capacity_gb": 1.0,
+        "controller_bus": 0,
+        "unit_number": 2,
+        "provisioning": "thin",
+        "disk_mode": "persistent"
+      }
+    ]
+  },
+  "network": {
+    "nics": [
+      {
+        "label": "Network adapter 1",
+        "adapter_type": "vim.vm.device.VirtualE1000e",
+        "network_name": "VM Network"
+      },
+      {
+        "label": "Network adapter 3",
+        "adapter_type": "vim.vm.device.VirtualE1000e",
+        "network_name": "VM Test Network"
+      }
+    ]
+  },
+  "advanced": {
+    "cbt_enabled": true
+  },
+  "guest_runtime": {
+    "ip_config": [
+      {
+        "nic_label": "Network adapter 1",
+        "ip_addresses": [
+          {
+            "address": "2620:52:9:162e:2121:d8f8:b121:836a",
+            "prefix_length": 64,
+            "origin": "linklayer"
+          },
+          {
+            "address": "10.6.46.153",
+            "prefix_length": 24,
+            "origin": "dhcp"
+          }
+        ],
+        "gateway": "10.6.46.254"
+      },
+      {
+        "nic_label": "Network adapter 3",
+        "ip_addresses": [
+          {
+            "address": "2620:52:9:162e:250f:2307:ece2:61a5",
+            "prefix_length": 64,
+            "origin": "linklayer"
+          },
+          {
+            "address": "192.168.190.101",
+            "prefix_length": 24,
+            "origin": "manual"
+          }
+        ],
+        "gateway": ""
+      }
+    ]
+  },
+  "shared_disk_groups": []
+}

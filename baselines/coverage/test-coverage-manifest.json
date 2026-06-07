@@ -1,0 +1,1106 @@
+{
+  "manifest_version": "1.0",
+  "generated_from": "mtv-api-tests",
+  "tests": {
+    "test_cold_migration_comprehensive": {
+      "test_class": "TestColdMigrationComprehensive",
+      "test_file": "tests/cold/test_cold_migration_comprehensive.py",
+      "vms": [
+        "mtv-win2019-3disks"
+      ],
+      "markers": [
+        "openshift",
+        "openstack",
+        "rhv",
+        "tier0",
+        "vsphere"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": false,
+        "preserve_static_ips": true,
+        "target_power_state": "on",
+        "pvc_name_template": "{{.VmName}}-disk-{{.DiskIndex}}",
+        "pvc_name_template_use_generate_name": false,
+        "target_labels": {
+          "mtv-comprehensive-label": null,
+          "test-type": "comprehensive"
+        },
+        "target_affinity": {
+          "podAffinity": {
+            "preferredDuringSchedulingIgnoredDuringExecution": [
+              {
+                "podAffinityTerm": {
+                  "labelSelector": {
+                    "matchLabels": {
+                      "app": "test"
+                    }
+                  },
+                  "topologyKey": "kubernetes.io/hostname"
+                },
+                "weight": 50
+              }
+            ]
+          }
+        },
+        "target_node_selector": {
+          "mtv-comprehensive-node": null
+        },
+        "vm_target_namespace": "mtv-vms-cold-comprehensive-<dynamic>",
+        "multus_namespace": "default",
+        "guest_agent_timeout": 600
+      },
+      "expected_checks": [
+        "affinity",
+        "cpu",
+        "guest_agent",
+        "labels",
+        "memory",
+        "network",
+        "nic_name",
+        "node_selector",
+        "power_state",
+        "pvc_names",
+        "rhv_power_off_event",
+        "serial",
+        "ssh_connectivity",
+        "ssl_config",
+        "static_ip",
+        "storage"
+      ]
+    },
+    "test_cold_remote_ocp": {
+      "test_class": "TestColdRemoteOcp",
+      "test_file": "tests/cold/test_mtv_cold_migration.py",
+      "vms": [
+        "mtv-tests-rhel8",
+        "mtv-win2019-79"
+      ],
+      "markers": [
+        "openshift",
+        "openstack",
+        "remote",
+        "rhv",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false
+      },
+      "expected_checks": [
+        "cpu",
+        "memory",
+        "network",
+        "power_state",
+        "rhv_power_off_event",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_concurrent_xcopy_vddk_migration": {
+      "test_class": "TestConcurrentXcopyVddkMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test",
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_10_mixed_disks_migration": {
+      "test_class": "TestCopyoffload10MixedDisksMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "copyoffload_sanity",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_2tb_vm_snapshots_migration": {
+      "test_class": "TestCopyoffload2TbVmSnapshotsMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "copyoffload_snapshots",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_dual_disk_mixed_thin_thick_migration": {
+      "test_class": "TestCopyoffloadDualDiskMixedThinThickMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_fallback_large_migration": {
+      "test_class": "TestCopyoffloadFallbackLargeMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_independent_nonpersistent_disk_migration": {
+      "test_class": "TestCopyoffloadIndependentNonpersistentDiskMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_independent_persistent_disk_migration": {
+      "test_class": "TestCopyoffloadIndependentPersistentDiskMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_large_vm_migration": {
+      "test_class": "TestCopyoffloadLargeVmMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_mixed_datastore_migration": {
+      "test_class": "TestCopyoffloadMixedDatastoreMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "copyoffload_sanity",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_multi_datastore_migration": {
+      "test_class": "TestCopyoffloadMultiDatastoreMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "copyoffload_sanity",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_multi_disk_different_datastore_path_migration": {
+      "test_class": "TestCopyoffloadMultiDiskDifferentDatastorePathMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_multi_disk_different_path_migration": {
+      "test_class": "TestCopyoffloadMultiDiskDifferentPathMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_multi_disk_migration": {
+      "test_class": "TestCopyoffloadMultiDiskMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "guest_agent",
+        "power_state"
+      ]
+    },
+    "test_copyoffload_nonconforming_name_migration": {
+      "test_class": "TestCopyoffloadNonconformingNameMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_rdm_physical_disk_migration": {
+      "test_class": "TestCopyoffloadRdmPhysicalDiskMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_rdm_virtual_disk_migration": {
+      "test_class": "TestCopyoffloadRdmVirtualDiskMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "copyoffload_sanity",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_scale_migration": {
+      "test_class": "TestCopyoffloadScaleMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test",
+        "xcopy-template-test",
+        "xcopy-template-test",
+        "xcopy-template-test",
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "copyoffload_sanity",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true,
+        "guest_agent_timeout": 600
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_thick_eager_migration": {
+      "test_class": "TestCopyoffloadThickEagerMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_thick_eager_snapshots_migration": {
+      "test_class": "TestCopyoffloadThickEagerSnapshotsMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "copyoffload_sanity",
+        "copyoffload_snapshots",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_thick_lazy_migration": {
+      "test_class": "TestCopyoffloadThickLazyMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_thick_lazy_snapshots_migration": {
+      "test_class": "TestCopyoffloadThickLazySnapshotsMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "copyoffload_snapshots",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_thin_migration": {
+      "test_class": "TestCopyoffloadThinMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_thin_snapshots_migration": {
+      "test_class": "TestCopyoffloadThinSnapshotsMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "copyoffload_snapshots"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "guest_agent",
+        "power_state"
+      ]
+    },
+    "test_copyoffload_warm_migration": {
+      "test_class": "TestCopyoffloadWarmMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "copyoffload_sanity",
+        "vsphere",
+        "warm"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": true,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssh_connectivity",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_copyoffload_warm_rdm_virtual_disk_migration": {
+      "test_class": "TestCopyoffloadWarmRdmVirtualDiskMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere",
+        "warm"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": true,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssh_connectivity",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_mtv_migration_warm_2disks2nics": {
+      "test_class": "TestMtvMigrationWarm2disks2nics",
+      "test_file": "tests/warm/test_mtv_warm_migration.py",
+      "vms": [
+        "mtv-rhel8-warm-2disks2nics"
+      ],
+      "markers": [
+        "rhv",
+        "vsphere",
+        "warm"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "rhv_power_off_event",
+        "serial",
+        "ssh_connectivity",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_ova_cold_migration": {
+      "test_class": "TestOvaColdMigration",
+      "test_file": "tests/cold/test_ova_cold_migration.py",
+      "vms": [
+        "mtv-win2019-3disks"
+      ],
+      "markers": [
+        "ova",
+        "tier0"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": false,
+        "target_power_state": "on",
+        "target_labels": {
+          "mtv-comprehensive-label": null,
+          "test-type": "comprehensive"
+        },
+        "target_affinity": {
+          "podAffinity": {
+            "preferredDuringSchedulingIgnoredDuringExecution": [
+              {
+                "podAffinityTerm": {
+                  "labelSelector": {
+                    "matchLabels": {
+                      "app": "test"
+                    }
+                  },
+                  "topologyKey": "kubernetes.io/hostname"
+                },
+                "weight": 50
+              }
+            ]
+          }
+        }
+      },
+      "expected_checks": [
+        "affinity",
+        "guest_agent",
+        "labels",
+        "power_state",
+        "ssh_connectivity"
+      ]
+    },
+    "test_post_hook_retain_failed_vm": {
+      "test_class": "TestPostHookRetainFailedVm",
+      "test_file": "tests/hooks/test_post_hook_retain_failed_vm.py",
+      "vms": [
+        "mtv-tests-rhel8"
+      ],
+      "markers": [
+        "openshift",
+        "openstack",
+        "rhv",
+        "tier0",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "target_power_state": "off",
+        "pre_hook": {
+          "expected_result": "succeed"
+        },
+        "post_hook": {
+          "expected_result": "fail"
+        },
+        "expected_migration_result": "fail"
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "rhv_power_off_event",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_sanity_cold_mtv_migration": {
+      "test_class": "TestSanityColdMtvMigration",
+      "test_file": "tests/cold/test_mtv_cold_migration.py",
+      "vms": [
+        "mtv-tests-rhel8"
+      ],
+      "markers": [
+        "esxi",
+        "openshift",
+        "openstack",
+        "rhv",
+        "tier0",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "rhv_power_off_event",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_sanity_warm_mtv_migration": {
+      "test_class": "TestSanityWarmMtvMigration",
+      "test_file": "tests/warm/test_mtv_warm_migration.py",
+      "vms": [
+        "mtv-tests-rhel8"
+      ],
+      "markers": [
+        "rhv",
+        "tier0",
+        "upgrade",
+        "vsphere",
+        "warm"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": true,
+        "preserve_static_ips": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "nic_name",
+        "power_state",
+        "rhv_power_off_event",
+        "serial",
+        "ssh_connectivity",
+        "ssl_config",
+        "static_ip",
+        "storage"
+      ]
+    },
+    "test_shared_disk_rhel_migration": {
+      "test_class": "TestSharedDiskRhelMigration",
+      "test_file": "tests/shared_disk/test_shared_disk_rhel_migration.py",
+      "vms": [
+        "mtv-feature-shared-rhel1",
+        "mtv-feature-shared-rhel2"
+      ],
+      "markers": [
+        "shared_disk",
+        "tier0",
+        "vsphere"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": false,
+        "migrate_shared_disks": true,
+        "target_power_state": "on",
+        "shared_disk_device": "/dev/vdc"
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "shared_disk",
+        "ssh_connectivity",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_simultaneous_copyoffload_migrations": {
+      "test_class": "TestSimultaneousCopyoffloadMigrations",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test",
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_upgrade_cold_migration": {
+      "test_class": "TestUpgradeColdMigration",
+      "test_file": "tests/upgrade/test_upgrade_migration.py",
+      "vms": [
+        "mtv-tests-rhel8"
+      ],
+      "markers": [
+        "upgrade",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_warm_migration_comprehensive": {
+      "test_class": "TestWarmMigrationComprehensive",
+      "test_file": "tests/warm/test_warm_migration_comprehensive.py",
+      "vms": [
+        "mtv-win2022-ip-3disks"
+      ],
+      "markers": [
+        "rhv",
+        "tier0",
+        "vsphere",
+        "warm"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": true,
+        "preserve_static_ips": true,
+        "target_power_state": "on",
+        "pvc_name_template": "{{ .FileName | trimSuffix \".vmdk\" | replace \"_\" \"-\" }}-{{.DiskIndex}}",
+        "pvc_name_template_use_generate_name": true,
+        "target_labels": {
+          "mtv-comprehensive-test": null,
+          "static-label": "static-value"
+        },
+        "target_affinity": {
+          "podAffinity": {
+            "preferredDuringSchedulingIgnoredDuringExecution": [
+              {
+                "podAffinityTerm": {
+                  "labelSelector": {
+                    "matchLabels": {
+                      "app": "comprehensive-test"
+                    }
+                  },
+                  "topologyKey": "kubernetes.io/hostname"
+                },
+                "weight": 75
+              }
+            ]
+          }
+        },
+        "vm_target_namespace": "mtv-vms-warm-comprehensive-<dynamic>",
+        "multus_namespace": "default",
+        "guest_agent_timeout": 600
+      },
+      "expected_checks": [
+        "affinity",
+        "cpu",
+        "guest_agent",
+        "labels",
+        "memory",
+        "network",
+        "nic_name",
+        "power_state",
+        "pvc_names",
+        "rhv_power_off_event",
+        "serial",
+        "ssh_connectivity",
+        "ssl_config",
+        "static_ip",
+        "storage"
+      ]
+    },
+    "test_warm_remote_ocp": {
+      "test_class": "TestWarmRemoteOcp",
+      "test_file": "tests/warm/test_mtv_warm_migration.py",
+      "vms": [
+        "mtv-tests-rhel8"
+      ],
+      "markers": [
+        "remote",
+        "rhv",
+        "vsphere",
+        "warm"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "rhv_power_off_event",
+        "serial",
+        "ssh_connectivity",
+        "ssl_config",
+        "storage"
+      ]
+    }
+  }
+}

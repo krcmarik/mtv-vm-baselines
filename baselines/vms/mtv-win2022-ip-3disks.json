@@ -1,0 +1,139 @@
+{
+  "meta": {
+    "vm_name": "mtv-win2022-ip-3disks",
+    "baseline_version": "1.1",
+    "captured_at": "2026-06-05T23:24:10.465453+00:00",
+    "description": ""
+  },
+  "guest_os": {
+    "guest_id": "windows2019srv_64Guest",
+    "guest_full_name": "Microsoft Windows Server 2019 (64-bit)",
+    "os_family": "windowsGuest"
+  },
+  "hardware": {
+    "hw_version": "vmx-17",
+    "firmware": "efi",
+    "num_cpu": 2,
+    "memory_mb": 2048
+  },
+  "storage": {
+    "controllers": [
+      {
+        "type": "vim.vm.device.VirtualLsiLogicSASController",
+        "bus_number": 0,
+        "bus_sharing": "noSharing"
+      },
+      {
+        "type": "vim.vm.device.VirtualAHCIController",
+        "bus_number": 0,
+        "bus_sharing": "noSharing"
+      },
+      {
+        "type": "vim.vm.device.VirtualNVMEController",
+        "bus_number": 0,
+        "bus_sharing": "noSharing"
+      }
+    ],
+    "disks": [
+      {
+        "label": "Hard disk 1",
+        "capacity_gb": 16.0,
+        "controller_bus": 0,
+        "unit_number": 1,
+        "provisioning": "thin",
+        "disk_mode": "persistent"
+      },
+      {
+        "label": "Hard disk 2",
+        "capacity_gb": 2.0,
+        "controller_bus": 0,
+        "unit_number": 2,
+        "provisioning": "thin",
+        "disk_mode": "persistent"
+      },
+      {
+        "label": "Hard disk 3",
+        "capacity_gb": 1.0,
+        "controller_bus": 0,
+        "unit_number": 3,
+        "provisioning": "thin",
+        "disk_mode": "persistent"
+      }
+    ]
+  },
+  "network": {
+    "nics": [
+      {
+        "label": "Network adapter 1",
+        "adapter_type": "vim.vm.device.VirtualE1000e",
+        "network_name": "VM Network"
+      },
+      {
+        "label": "Network adapter 2",
+        "adapter_type": "vim.vm.device.VirtualE1000e",
+        "network_name": "VM Test Network"
+      },
+      {
+        "label": "Network adapter 3",
+        "adapter_type": "vim.vm.device.VirtualE1000e",
+        "network_name": "cnv-test"
+      }
+    ]
+  },
+  "advanced": {
+    "cbt_enabled": true
+  },
+  "guest_runtime": {
+    "ip_config": [
+      {
+        "nic_label": "Network adapter 1",
+        "ip_addresses": [
+          {
+            "address": "2620:52:9:162e:1c74:96f4:7587:42e5",
+            "prefix_length": 64,
+            "origin": "linklayer"
+          },
+          {
+            "address": "10.6.46.186",
+            "prefix_length": 24,
+            "origin": "dhcp"
+          }
+        ],
+        "gateway": "10.6.46.254"
+      },
+      {
+        "nic_label": "Network adapter 2",
+        "ip_addresses": [
+          {
+            "address": "2620:52:9:162e:1c1d:602f:7679:9118",
+            "prefix_length": 64,
+            "origin": "linklayer"
+          },
+          {
+            "address": "10.6.46.202",
+            "prefix_length": 24,
+            "origin": "dhcp"
+          }
+        ],
+        "gateway": ""
+      },
+      {
+        "nic_label": "Network adapter 3",
+        "ip_addresses": [
+          {
+            "address": "10.2.122.67",
+            "prefix_length": 23,
+            "origin": "manual"
+          },
+          {
+            "address": "10.2.122.68",
+            "prefix_length": 23,
+            "origin": "manual"
+          }
+        ],
+        "gateway": ""
+      }
+    ]
+  },
+  "shared_disk_groups": []
+}
