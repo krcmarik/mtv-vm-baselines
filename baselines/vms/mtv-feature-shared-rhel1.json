@@ -1,8 +1,8 @@
 {
   "meta": {
     "vm_name": "mtv-feature-shared-rhel1",
-    "baseline_version": "1.1",
-    "captured_at": "2026-06-05T23:25:50.006884+00:00",
+    "baseline_version": "1.2",
+    "captured_at": "2026-06-08T21:25:43.006701+00:00",
     "description": ""
   },
   "guest_os": {
@@ -66,7 +66,9 @@
       {
         "label": "Network adapter 1",
         "adapter_type": "vim.vm.device.VirtualVmxnet3",
-        "network_name": "VM Network"
+        "network_name": "VM Network",
+        "mac_address": "00:50:56:a6:a9:99",
+        "address_type": "assigned"
       }
     ]
   },

@@ -18,8 +18,8 @@ from mtv_vm_baselines.models import (
     GuestRuntime,
     Hardware,
     IPAddress,
-    NICIPConfig,
     Network,
+    NICIPConfig,
     Storage,
     StorageController,
 )
@@ -282,6 +282,8 @@ class VSphereClient:
                         label=label,
                         adapter_type=adapter_type,
                         network_name=network_name,
+                        mac_address=device.macAddress or "",
+                        address_type=device.addressType or "",
                     )
                 )
 

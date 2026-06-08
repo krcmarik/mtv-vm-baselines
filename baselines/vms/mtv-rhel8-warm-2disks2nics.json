@@ -1,8 +1,8 @@
 {
   "meta": {
     "vm_name": "mtv-rhel8-warm-2disks2nics",
-    "baseline_version": "1.1",
-    "captured_at": "2026-06-05T23:28:06.835413+00:00",
+    "baseline_version": "1.2",
+    "captured_at": "2026-06-08T21:27:59.115742+00:00",
     "description": ""
   },
   "guest_os": {
@@ -53,12 +53,16 @@
       {
         "label": "Network adapter 1",
         "adapter_type": "vim.vm.device.VirtualVmxnet3",
-        "network_name": "Mgmt Network"
+        "network_name": "Mgmt Network",
+        "mac_address": "00:50:56:96:b6:45",
+        "address_type": "assigned"
       },
       {
         "label": "Network adapter 2",
         "adapter_type": "vim.vm.device.VirtualVmxnet3",
-        "network_name": "VM Network"
+        "network_name": "VM Network",
+        "mac_address": "00:50:56:96:10:34",
+        "address_type": "assigned"
       }
     ]
   },

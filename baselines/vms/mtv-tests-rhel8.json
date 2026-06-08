@@ -1,8 +1,8 @@
 {
   "meta": {
     "vm_name": "mtv-tests-rhel8",
-    "baseline_version": "1.1",
-    "captured_at": "2026-06-05T23:23:16.870991+00:00",
+    "baseline_version": "1.2",
+    "captured_at": "2026-06-08T21:28:07.870009+00:00",
     "description": ""
   },
   "guest_os": {
@@ -45,17 +45,23 @@
       {
         "label": "Network adapter 1",
         "adapter_type": "vim.vm.device.VirtualVmxnet3",
-        "network_name": "VM Network"
+        "network_name": "VM Network",
+        "mac_address": "00:50:56:ba:a5:bd",
+        "address_type": "assigned"
       },
       {
         "label": "Network adapter 2",
         "adapter_type": "vim.vm.device.VirtualVmxnet3",
-        "network_name": "VM Test Network"
+        "network_name": "VM Test Network",
+        "mac_address": "00:50:56:ba:14:82",
+        "address_type": "assigned"
       },
       {
         "label": "Network adapter 3",
         "adapter_type": "vim.vm.device.VirtualVmxnet3",
-        "network_name": "cnv-test"
+        "network_name": "cnv-test",
+        "mac_address": "00:50:56:A6:C0:09",
+        "address_type": "manual"
       }
     ]
   },

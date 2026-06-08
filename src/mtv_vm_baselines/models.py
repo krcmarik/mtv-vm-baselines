@@ -9,7 +9,7 @@ class BaselineMeta(BaseModel):
     """Metadata about when and how a baseline was captured."""
 
     vm_name: str
-    baseline_version: str = "1.1"
+    baseline_version: str = "1.2"
     captured_at: str = ""  # ISO 8601 timestamp
     description: str = ""
 
@@ -63,6 +63,8 @@ class NIC(BaseModel):
     label: str
     adapter_type: str  # e.g., "VirtualVmxnet3", "VirtualE1000e"
     network_name: str
+    mac_address: str = ""  # Exact MAC address (preserves case from vSphere)
+    address_type: str = ""  # "manual", "generated", "assigned"
 
 
 class Network(BaseModel):

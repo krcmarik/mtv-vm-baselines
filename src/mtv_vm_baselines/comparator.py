@@ -99,6 +99,10 @@ class BaselineComparator:
 
             actual_val = live_dict.get(section_name)
 
+            if section_name == "network":
+                diffs.extend(self._compare_network(expected_val or {}, actual_val or {}))
+                continue
+
             if section_name == "guest_runtime":
                 diffs.extend(
                     self._compare_guest_runtime(
@@ -177,6 +181,102 @@ class BaselineComparator:
 
         return diffs
 
+    def _compare_network(self, expected: dict[str, Any], actual: dict[str, Any]) -> list[DiffEntry]:
+        """Compare network section with MAC-address-type-aware logic.
+
+        Only compares mac_address when the baseline address_type is "manual".
+        For auto-assigned MACs (assigned, generated, or empty), the value can
+        change freely between captures.
+
+        Args:
+            expected: Baseline network dict.
+            actual: Live network dict.
+
+        Returns:
+            List of DiffEntry objects for detected differences.
+        """
+        diffs: list[DiffEntry] = []
+        path = "network"
+
+        exp_nics = expected.get("nics", [])
+        act_nics = actual.get("nics", [])
+
+        exp_by_label: dict[str, dict[str, Any]] = {nic["label"]: nic for nic in exp_nics}
+        act_by_label: dict[str, dict[str, Any]] = {nic["label"]: nic for nic in act_nics}
+
+        # Report missing NICs (in baseline but not live)
+        for label in sorted(set(exp_by_label) - set(act_by_label)):
+            diffs.append(
+                DiffEntry(
+                    path=f"{path}.nics[label={label}]",
+                    expected=exp_by_label[label],
+                    actual=None,
+                    severity="error",
+                )
+            )
+
+        # Report extra NICs (in live but not baseline)
+        for label in sorted(set(act_by_label) - set(exp_by_label)):
+            diffs.append(
+                DiffEntry(
+                    path=f"{path}.nics[label={label}]",
+                    expected=None,
+                    actual=act_by_label[label],
+                    severity="error",
+                )
+            )
+
+        # Compare matched NICs
+        for label in sorted(set(exp_by_label) & set(act_by_label)):
+            exp_nic = exp_by_label[label]
+            act_nic = act_by_label[label]
+            nic_path = f"{path}.nics[label={label}]"
+
+            # Skip mac_address comparison when baseline address_type is not manual
+            skip_fields: set[str] = set()
+            if exp_nic.get("address_type") != "manual":
+                skip_fields.add("mac_address")
+
+            for key in sorted(set(exp_nic.keys()) | set(act_nic.keys())):
+                if key == "label":  # key field, already matched
+                    continue
+                if key in skip_fields:
+                    continue
+
+                exp_val = exp_nic.get(key)
+                act_val = act_nic.get(key)
+
+                if exp_val != act_val:
+                    diffs.append(
+                        DiffEntry(
+                            path=f"{nic_path}.{key}",
+                            expected=exp_val,
+                            actual=act_val,
+                            severity=_severity_for(f"{nic_path}.{key}"),
+                        )
+                    )
+
+        # Compare any non-NIC keys in the network section via the generic path
+        non_nic_keys = (set(expected.keys()) | set(actual.keys())) - {"nics"}
+        for key in sorted(non_nic_keys):
+            full_path = f"{path}.{key}"
+            exp_val = expected.get(key)
+            act_val = actual.get(key)
+            if exp_val != act_val:
+                if isinstance(exp_val, dict) and isinstance(act_val, dict):
+                    diffs.extend(self._compare_dicts(full_path, exp_val, act_val))
+                else:
+                    diffs.append(
+                        DiffEntry(
+                            path=full_path,
+                            expected=exp_val,
+                            actual=act_val,
+                            severity=_severity_for(full_path),
+                        )
+                    )
+
+        return diffs
+
     def _compare_shared_disk_groups(
         self,
         expected: list[dict[str, Any]],
@@ -205,8 +305,7 @@ class BaselineComparator:
             """
             vms = sorted(group.get("participating_vms", []))
             positions = sorted(
-                (p.get("vm", ""), p.get("bus", 0), p.get("unit", 0))
-                for p in group.get("scsi_positions", [])
+                (p.get("vm", ""), p.get("bus", 0), p.get("unit", 0)) for p in group.get("scsi_positions", [])
             )
             pos_str = ";".join(f"{vm}:{bus}:{unit}" for vm, bus, unit in positions)
             return f"{','.join(vms)}|{pos_str}"

@@ -1,8 +1,8 @@
 {
   "meta": {
     "vm_name": "mtv-win2022-ip-3disks",
-    "baseline_version": "1.1",
-    "captured_at": "2026-06-05T23:24:10.465453+00:00",
+    "baseline_version": "1.2",
+    "captured_at": "2026-06-08T21:30:03.916837+00:00",
     "description": ""
   },
   "guest_os": {
@@ -66,17 +66,23 @@
       {
         "label": "Network adapter 1",
         "adapter_type": "vim.vm.device.VirtualE1000e",
-        "network_name": "VM Network"
+        "network_name": "VM Network",
+        "mac_address": "00:50:56:88:3c:1b",
+        "address_type": "assigned"
       },
       {
         "label": "Network adapter 2",
         "adapter_type": "vim.vm.device.VirtualE1000e",
-        "network_name": "VM Test Network"
+        "network_name": "VM Test Network",
+        "mac_address": "00:50:56:88:24:d6",
+        "address_type": "assigned"
       },
       {
         "label": "Network adapter 3",
         "adapter_type": "vim.vm.device.VirtualE1000e",
-        "network_name": "cnv-test"
+        "network_name": "cnv-test",
+        "mac_address": "00:50:56:88:ba:55",
+        "address_type": "assigned"
       }
     ]
   },

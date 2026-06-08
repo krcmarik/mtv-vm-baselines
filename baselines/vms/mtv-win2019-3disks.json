@@ -1,8 +1,8 @@
 {
   "meta": {
     "vm_name": "mtv-win2019-3disks",
-    "baseline_version": "1.1",
-    "captured_at": "2026-06-05T23:24:57.524481+00:00",
+    "baseline_version": "1.2",
+    "captured_at": "2026-06-08T21:29:00.044953+00:00",
     "description": ""
   },
   "guest_os": {
@@ -61,12 +61,16 @@
       {
         "label": "Network adapter 1",
         "adapter_type": "vim.vm.device.VirtualE1000e",
-        "network_name": "VM Network"
+        "network_name": "VM Network",
+        "mac_address": "00:50:56:88:b2:2a",
+        "address_type": "assigned"
       },
       {
         "label": "Network adapter 3",
         "adapter_type": "vim.vm.device.VirtualE1000e",
-        "network_name": "VM Test Network"
+        "network_name": "VM Test Network",
+        "mac_address": "00:50:56:88:51:da",
+        "address_type": "assigned"
       }
     ]
   },

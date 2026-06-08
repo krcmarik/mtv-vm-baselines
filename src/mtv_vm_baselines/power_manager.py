@@ -121,27 +121,17 @@ class PowerManager:
                 break
             time.sleep(5)
         else:
-            raise TimeoutError(
-                f"VMware Tools did not become ready on VM '{vm.name}' within {timeout}s"
-            )
+            raise TimeoutError(f"VMware Tools did not become ready on VM '{vm.name}' within {timeout}s")
 
         # Tools reports running before guest networking is fully initialized
         while time.time() < deadline:
             if self._has_guest_net_ips(vm):
-                nics_with_ips = sum(
-                    1 for nic in vm.guest.net if nic.ipAddress
-                )
-                logger.debug(
-                    f"Guest networking ready on VM '{vm.name}': "
-                    f"{nics_with_ips} NIC(s) with IPs"
-                )
+                nics_with_ips = sum(1 for nic in vm.guest.net if nic.ipAddress)
+                logger.debug(f"Guest networking ready on VM '{vm.name}': {nics_with_ips} NIC(s) with IPs")
                 return
             time.sleep(5)
 
-        logger.warning(
-            f"Guest networking did not populate on VM '{vm.name}' "
-            f"within remaining timeout"
-        )
+        logger.warning(f"Guest networking did not populate on VM '{vm.name}' within remaining timeout")
 
     @staticmethod
     def _has_guest_net_ips(vm: vim.VirtualMachine) -> bool:
