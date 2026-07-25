@@ -1,25 +1,25 @@
 {
   "meta": {
-    "vm_name": "mtv-win2022-ip-3disks",
-    "baseline_version": "1.2",
-    "captured_at": "2026-06-08T21:30:03.916837+00:00",
+    "vm_name": "mtv-win2019-3disks",
+    "baseline_version": "1.3",
+    "captured_at": "2026-07-25T02:01:29.309081+00:00",
     "description": ""
   },
   "guest_os": {
-    "guest_id": "windows2019srv_64Guest",
-    "guest_full_name": "Microsoft Windows Server 2019 (64-bit)",
+    "guest_id": "windows8Server64Guest",
+    "guest_full_name": "Microsoft Windows Server 2012 (64-bit)",
     "os_family": "windowsGuest"
   },
   "hardware": {
     "hw_version": "vmx-17",
-    "firmware": "efi",
+    "firmware": "bios",
     "num_cpu": 2,
     "memory_mb": 2048
   },
   "storage": {
     "controllers": [
       {
-        "type": "vim.vm.device.VirtualLsiLogicSASController",
+        "type": "vim.vm.device.ParaVirtualSCSIController",
         "bus_number": 0,
         "bus_sharing": "noSharing"
       },
@@ -27,27 +27,22 @@
         "type": "vim.vm.device.VirtualAHCIController",
         "bus_number": 0,
         "bus_sharing": "noSharing"
-      },
-      {
-        "type": "vim.vm.device.VirtualNVMEController",
-        "bus_number": 0,
-        "bus_sharing": "noSharing"
       }
     ],
     "disks": [
       {
         "label": "Hard disk 1",
-        "capacity_gb": 16.0,
+        "capacity_gb": 12.0,
         "controller_bus": 0,
-        "unit_number": 1,
+        "unit_number": 0,
         "provisioning": "thin",
         "disk_mode": "persistent"
       },
       {
         "label": "Hard disk 2",
-        "capacity_gb": 2.0,
+        "capacity_gb": 4.0,
         "controller_bus": 0,
-        "unit_number": 2,
+        "unit_number": 1,
         "provisioning": "thin",
         "disk_mode": "persistent"
       },
@@ -55,7 +50,7 @@
         "label": "Hard disk 3",
         "capacity_gb": 1.0,
         "controller_bus": 0,
-        "unit_number": 3,
+        "unit_number": 2,
         "provisioning": "thin",
         "disk_mode": "persistent"
       }
@@ -67,21 +62,14 @@
         "label": "Network adapter 1",
         "adapter_type": "vim.vm.device.VirtualE1000e",
         "network_name": "VM Network",
-        "mac_address": "00:50:56:88:3c:1b",
-        "address_type": "assigned"
-      },
-      {
-        "label": "Network adapter 2",
-        "adapter_type": "vim.vm.device.VirtualE1000e",
-        "network_name": "VM Test Network",
-        "mac_address": "00:50:56:88:24:d6",
+        "mac_address": "00:50:56:a2:06:69",
         "address_type": "assigned"
       },
       {
         "label": "Network adapter 3",
         "adapter_type": "vim.vm.device.VirtualE1000e",
-        "network_name": "cnv-test",
-        "mac_address": "00:50:56:88:ba:55",
+        "network_name": "VM Test Network",
+        "mac_address": "00:50:56:a2:eb:7c",
         "address_type": "assigned"
       }
     ]
@@ -89,36 +77,20 @@
   "advanced": {
     "cbt_enabled": true
   },
+  "security_features": {
+    "vbs_enabled": false,
+    "tpm_present": false,
+    "efi_secure_boot_enabled": false
+  },
   "guest_runtime": {
     "ip_config": [
       {
         "nic_label": "Network adapter 1",
         "ip_addresses": [
           {
-            "address": "2620:52:9:162e:1c74:96f4:7587:42e5",
+            "address": "2620:52:9:162e:f4c5:1e69:c6:1ce2",
             "prefix_length": 64,
             "origin": "linklayer"
-          },
-          {
-            "address": "10.6.46.186",
-            "prefix_length": 24,
-            "origin": "dhcp"
-          }
-        ],
-        "gateway": "10.6.46.254"
-      },
-      {
-        "nic_label": "Network adapter 2",
-        "ip_addresses": [
-          {
-            "address": "2620:52:9:162e:1c1d:602f:7679:9118",
-            "prefix_length": 64,
-            "origin": "linklayer"
-          },
-          {
-            "address": "10.6.46.202",
-            "prefix_length": 24,
-            "origin": "dhcp"
           }
         ],
         "gateway": ""
@@ -127,17 +99,17 @@
         "nic_label": "Network adapter 3",
         "ip_addresses": [
           {
-            "address": "10.2.122.67",
-            "prefix_length": 23,
-            "origin": "manual"
+            "address": "2620:52:9:162e:a906:ddf5:7459:b2cf",
+            "prefix_length": 64,
+            "origin": "linklayer"
           },
           {
-            "address": "10.2.122.68",
-            "prefix_length": 23,
+            "address": "192.168.190.101",
+            "prefix_length": 24,
             "origin": "manual"
           }
         ],
-        "gateway": ""
+        "gateway": "192.168.190.1"
       }
     ]
   },

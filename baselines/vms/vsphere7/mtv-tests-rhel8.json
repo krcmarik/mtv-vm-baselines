@@ -1,8 +1,8 @@
 {
   "meta": {
-    "vm_name": "mtv-rhel8-warm-2disks2nics",
-    "baseline_version": "1.2",
-    "captured_at": "2026-06-08T21:27:59.115742+00:00",
+    "vm_name": "mtv-tests-rhel8",
+    "baseline_version": "1.3",
+    "captured_at": "2026-07-25T01:36:00.534536+00:00",
     "description": ""
   },
   "guest_os": {
@@ -13,18 +13,13 @@
   "hardware": {
     "hw_version": "vmx-17",
     "firmware": "bios",
-    "num_cpu": 1,
+    "num_cpu": 4,
     "memory_mb": 2048
   },
   "storage": {
     "controllers": [
       {
         "type": "vim.vm.device.ParaVirtualSCSIController",
-        "bus_number": 0,
-        "bus_sharing": "noSharing"
-      },
-      {
-        "type": "vim.vm.device.VirtualAHCIController",
         "bus_number": 0,
         "bus_sharing": "noSharing"
       }
@@ -34,15 +29,7 @@
         "label": "Hard disk 1",
         "capacity_gb": 16.0,
         "controller_bus": 0,
-        "unit_number": 0,
-        "provisioning": "thin",
-        "disk_mode": "persistent"
-      },
-      {
-        "label": "Hard disk 2",
-        "capacity_gb": 4.0,
-        "controller_bus": 0,
-        "unit_number": 1,
+        "unit_number": 2,
         "provisioning": "thin",
         "disk_mode": "persistent"
       }
@@ -53,21 +40,33 @@
       {
         "label": "Network adapter 1",
         "adapter_type": "vim.vm.device.VirtualVmxnet3",
-        "network_name": "Mgmt Network",
-        "mac_address": "00:50:56:96:b6:45",
+        "network_name": "VM Network",
+        "mac_address": "00:50:56:b4:51:2a",
         "address_type": "assigned"
       },
       {
         "label": "Network adapter 2",
         "adapter_type": "vim.vm.device.VirtualVmxnet3",
-        "network_name": "VM Network",
-        "mac_address": "00:50:56:96:10:34",
+        "network_name": "VMMCDP101",
+        "mac_address": "00:50:56:b4:24:3d",
         "address_type": "assigned"
+      },
+      {
+        "label": "Network adapter 3",
+        "adapter_type": "vim.vm.device.VirtualVmxnet3",
+        "network_name": "VMMCDB112",
+        "mac_address": "00:50:56:A6:C0:09",
+        "address_type": "manual"
       }
     ]
   },
   "advanced": {
     "cbt_enabled": true
+  },
+  "security_features": {
+    "vbs_enabled": false,
+    "tpm_present": false,
+    "efi_secure_boot_enabled": false
   },
   "guest_runtime": {
     "ip_config": [
@@ -75,12 +74,12 @@
         "nic_label": "Network adapter 1",
         "ip_addresses": [
           {
-            "address": "10.6.46.191",
+            "address": "10.6.46.221",
             "prefix_length": 24,
             "origin": ""
           },
           {
-            "address": "2620:52:9:162e:74b9:bd74:7460:cc5b",
+            "address": "2620:52:9:162e:250:56ff:feb4:512a",
             "prefix_length": 64,
             "origin": ""
           }
@@ -91,12 +90,38 @@
         "nic_label": "Network adapter 2",
         "ip_addresses": [
           {
-            "address": "192.168.24.240",
+            "address": "192.168.1.100",
             "prefix_length": 24,
             "origin": ""
           },
           {
-            "address": "2620:52:9:162e:fdbd:81d7:c6b1:6fa2",
+            "address": "192.168.1.101",
+            "prefix_length": 24,
+            "origin": ""
+          },
+          {
+            "address": "2620:52:9:162e:ae2c:4083:5c6e:6c4d",
+            "prefix_length": 64,
+            "origin": ""
+          }
+        ],
+        "gateway": ""
+      },
+      {
+        "nic_label": "Network adapter 3",
+        "ip_addresses": [
+          {
+            "address": "192.168.2.100",
+            "prefix_length": 24,
+            "origin": ""
+          },
+          {
+            "address": "192.168.2.101",
+            "prefix_length": 24,
+            "origin": ""
+          },
+          {
+            "address": "2620:52:9:162e:250:56ff:fea6:c009",
             "prefix_length": 64,
             "origin": ""
           }

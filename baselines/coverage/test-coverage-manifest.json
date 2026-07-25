@@ -2,6 +2,36 @@
   "manifest_version": "1.0",
   "generated_from": "mtv-api-tests",
   "tests": {
+    "test_ca_crt_cold_migration": {
+      "test_class": "TestCaCrtColdMigration",
+      "test_file": "tests/cold/test_ca_crt_migration.py",
+      "vms": [
+        "mtv-tests-rhel8"
+      ],
+      "markers": [
+        "ca_crt",
+        "esxi",
+        "openstack",
+        "rhv",
+        "tier1",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "rhv_power_off_event",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
     "test_cold_migration_comprehensive": {
       "test_class": "TestColdMigrationComprehensive",
       "test_file": "tests/cold/test_cold_migration_comprehensive.py",
@@ -66,6 +96,33 @@
         "ssh_connectivity",
         "ssl_config",
         "static_ip",
+        "storage"
+      ]
+    },
+    "test_cold_migration_xfs": {
+      "test_class": "TestColdMigrationXfs",
+      "test_file": "tests/cold/test_cold_migration_xfs.py",
+      "vms": [
+        "mtv-feature-rhel8-2xfs"
+      ],
+      "markers": [
+        "tier1",
+        "vsphere"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": false,
+        "target_power_state": "on"
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssh_connectivity",
+        "ssl_config",
         "storage"
       ]
     },
@@ -460,6 +517,32 @@
         "storage"
       ]
     },
+    "test_copyoffload_populator_throttling_migration": {
+      "test_class": "TestCopyoffloadPopulatorThrottlingMigration",
+      "test_file": "tests/copyoffload/test_copyoffload_migration.py",
+      "vms": [
+        "xcopy-template-test"
+      ],
+      "markers": [
+        "copyoffload",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false,
+        "copyoffload": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
     "test_copyoffload_rdm_physical_disk_migration": {
       "test_class": "TestCopyoffloadRdmPhysicalDiskMigration",
       "test_file": "tests/copyoffload/test_copyoffload_migration.py",
@@ -755,6 +838,112 @@
         "storage"
       ]
     },
+    "test_luks_cold_migration": {
+      "test_class": "TestLuksColdMigration",
+      "test_file": "tests/luks/test_luks_cold_migration.py",
+      "vms": [
+        "mtv-tests-rhel9-luks"
+      ],
+      "markers": [
+        "tier1",
+        "vsphere"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": false
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssh_connectivity",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_luks_cold_migration_wrong_key": {
+      "test_class": "TestLuksColdMigrationWrongKey",
+      "test_file": "tests/luks/test_luks_cold_migration.py",
+      "vms": [
+        "mtv-tests-rhel9-luks"
+      ],
+      "markers": [
+        "tier1",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {
+        "warm_migration": false
+      },
+      "expected_checks": [
+        "cpu",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_mtv_clusterrole_warm_migration": {
+      "test_class": "TestClusterroleWarmMtvMigration",
+      "test_file": "tests/warm/test_mtv_warm_clusterrole_migration.py",
+      "vms": [
+        "mtv-tests-rhel8"
+      ],
+      "markers": [
+        "remote",
+        "tier1",
+        "vsphere",
+        "warm"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssh_connectivity",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_mtv_clusterrole_warm_migration_with_scc": {
+      "test_class": "TestClusterroleWarmWithSccMigration",
+      "test_file": "tests/warm/test_mtv_warm_clusterrole_migration.py",
+      "vms": [
+        "mtv-tests-rhel8"
+      ],
+      "markers": [
+        "remote",
+        "tier0",
+        "vsphere",
+        "warm"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": true
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssh_connectivity",
+        "ssl_config",
+        "storage"
+      ]
+    },
     "test_mtv_migration_warm_2disks2nics": {
       "test_class": "TestMtvMigrationWarm2disks2nics",
       "test_file": "tests/warm/test_mtv_warm_migration.py",
@@ -943,8 +1132,38 @@
       "features": {
         "warm_migration": false,
         "migrate_shared_disks": true,
-        "target_power_state": "on",
-        "shared_disk_device": "/dev/vdc"
+        "target_power_state": "on"
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "shared_disk",
+        "ssh_connectivity",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_shared_disk_windows_migration": {
+      "test_class": "TestSharedDiskWindowsMigration",
+      "test_file": "tests/shared_disk/test_shared_disk_windows_migration.py",
+      "vms": [
+        "mtv-tests-shared-win1",
+        "mtv-tests-shared-win2"
+      ],
+      "markers": [
+        "shared_disk",
+        "tier1",
+        "vsphere"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": false,
+        "migrate_shared_disks": true,
+        "target_power_state": "on"
       },
       "expected_checks": [
         "cpu",
@@ -978,6 +1197,29 @@
       "expected_checks": [
         "cpu",
         "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssl_config",
+        "storage"
+      ]
+    },
+    "test_standalone_di_vsphere": {
+      "test_class": "TestStandaloneDIValidation",
+      "test_file": "tests/deep_inspection/test_standalone_di.py",
+      "vms": [
+        "mtv-tests-di-rhel8"
+      ],
+      "markers": [
+        "deep_inspection",
+        "tier1",
+        "vsphere"
+      ],
+      "vm_power_state": "off",
+      "features": {},
+      "expected_checks": [
+        "cpu",
         "memory",
         "network",
         "power_state",
@@ -1070,6 +1312,34 @@
         "ssh_connectivity",
         "ssl_config",
         "static_ip",
+        "storage"
+      ]
+    },
+    "test_warm_migration_xfs": {
+      "test_class": "TestWarmMigrationXfs",
+      "test_file": "tests/warm/test_warm_migration_xfs.py",
+      "vms": [
+        "mtv-feature-rhel7-xfs"
+      ],
+      "markers": [
+        "tier1",
+        "vsphere",
+        "warm"
+      ],
+      "vm_power_state": "on",
+      "features": {
+        "warm_migration": true,
+        "target_power_state": "on"
+      },
+      "expected_checks": [
+        "cpu",
+        "guest_agent",
+        "memory",
+        "network",
+        "power_state",
+        "serial",
+        "ssh_connectivity",
+        "ssl_config",
         "storage"
       ]
     },

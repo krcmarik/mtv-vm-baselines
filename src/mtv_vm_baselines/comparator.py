@@ -20,6 +20,9 @@ _WARNING_FIELDS: set[str] = {
 # Sections to skip during comparison (always different between captures)
 _SKIP_SECTIONS: set[str] = {"meta"}
 
+# Fields to skip during comparison (metadata, not functional differences)
+_SKIP_COMPARISON_FIELDS: set[str] = {"backing_file"}
+
 # Key fields used for matching list items by canonical path.
 # Canonical path = dotted path with bracket-notation segments removed.
 # E.g., "guest_runtime.ip_config[nic_label=eth0].ip_addresses" becomes
@@ -158,6 +161,8 @@ class BaselineComparator:
 
         for key in sorted(all_keys):
             full_path = f"{path}.{key}"
+            if key in _SKIP_COMPARISON_FIELDS:
+                continue
             exp_val = expected.get(key)
             act_val = actual.get(key)
 
@@ -457,65 +462,38 @@ class BaselineComparator:
         diffs: list[DiffEntry] = []
         ip_path = f"{nic_path}.ip_addresses"
 
-        exp_by_addr = {ip["address"]: ip for ip in expected}
-        act_by_addr = {ip["address"]: ip for ip in actual}
+        _EPHEMERAL_ORIGINS: set[str] = {"dhcp", "linklayer", "random"}
+
+        exp_by_addr = {
+            ip["address"]: ip for ip in expected
+            if ip.get("origin", "") not in _EPHEMERAL_ORIGINS
+        }
+        act_by_addr = {
+            ip["address"]: ip for ip in actual
+            if ip.get("origin", "") not in _EPHEMERAL_ORIGINS
+        }
 
         missing = sorted(set(exp_by_addr) - set(act_by_addr))
         extra = sorted(set(act_by_addr) - set(exp_by_addr))
 
-        is_windows = os_family == "windowsGuest"
-
-        if is_windows:
-            for addr in missing:
-                origin = exp_by_addr[addr].get("origin", "")
-                severity = "warning" if origin in ("dhcp", "linklayer", "random") else "error"
-                diffs.append(
-                    DiffEntry(
-                        path=f"{ip_path}[address={addr}]",
-                        expected=exp_by_addr[addr],
-                        actual=None,
-                        severity=severity,
-                    )
+        for addr in missing:
+            diffs.append(
+                DiffEntry(
+                    path=f"{ip_path}[address={addr}]",
+                    expected=exp_by_addr[addr],
+                    actual=None,
+                    severity="error",
                 )
-            for addr in extra:
-                origin = act_by_addr[addr].get("origin", "")
-                severity = "warning" if origin in ("dhcp", "linklayer", "random") else "error"
-                diffs.append(
-                    DiffEntry(
-                        path=f"{ip_path}[address={addr}]",
-                        expected=None,
-                        actual=act_by_addr[addr],
-                        severity=severity,
-                    )
+            )
+        for addr in extra:
+            diffs.append(
+                DiffEntry(
+                    path=f"{ip_path}[address={addr}]",
+                    expected=None,
+                    actual=act_by_addr[addr],
+                    severity="error",
                 )
-        else:
-            if len(expected) != len(actual):
-                diffs.append(
-                    DiffEntry(
-                        path=ip_path,
-                        expected=f"{len(expected)} address(es)",
-                        actual=f"{len(actual)} address(es)",
-                        severity="error",
-                    )
-                )
-            for addr in missing:
-                diffs.append(
-                    DiffEntry(
-                        path=f"{ip_path}[address={addr}]",
-                        expected=exp_by_addr[addr],
-                        actual=None,
-                        severity="warning",
-                    )
-                )
-            for addr in extra:
-                diffs.append(
-                    DiffEntry(
-                        path=f"{ip_path}[address={addr}]",
-                        expected=None,
-                        actual=act_by_addr[addr],
-                        severity="warning",
-                    )
-                )
+            )
 
         for addr in sorted(set(exp_by_addr) & set(act_by_addr)):
             exp_ip = exp_by_addr[addr]

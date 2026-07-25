@@ -232,7 +232,7 @@ class BaselineCollector:
             True if groups are equivalent, False otherwise.
         """
         # Compare participating VMs (order doesn't matter, both are sorted lists)
-        if group1.participating_vms != group2.participating_vms:
+        if sorted(group1.participating_vms) != sorted(group2.participating_vms):
             return False
 
         # Compare SCSI positions (order doesn't matter, so compare as sets)
@@ -310,5 +310,79 @@ class BaselineCollector:
                             f"Skipping duplicate shared disk group for VM '{vm_name}': "
                             f"group already exists with VMs={participating_vms}"
                         )
+
+        return baselines
+
+    def find_and_capture_shared_partners(
+        self,
+        baselines: dict[str, VMBaseline],
+        power_manager: PowerManager | None = None,
+    ) -> dict[str, VMBaseline]:
+        """Find and auto-capture VMs that share disks with already-captured VMs.
+
+        Checks each captured VM for shared SCSI buses, then uses
+        PropertyCollector to efficiently find partner VMs in vCenter.
+        Partners not already captured are captured automatically.
+
+        Args:
+            baselines: Dict of vm_name -> VMBaseline already captured.
+            power_manager: Optional PowerManager for power-on capture.
+
+        Returns:
+            Updated baselines dict with partner VMs added.
+        """
+        shared_vmdk_paths: set[str] = set()
+
+        for vm_name, baseline in baselines.items():
+            has_shared_bus = any(
+                ctrl.bus_sharing != "noSharing"
+                for ctrl in baseline.storage.controllers
+            )
+            if not has_shared_bus:
+                continue
+
+            for disk in baseline.storage.disks:
+                if not disk.backing_file:
+                    continue
+                for ctrl in baseline.storage.controllers:
+                    if ctrl.bus_number == disk.controller_bus and ctrl.bus_sharing != "noSharing":
+                        shared_vmdk_paths.add(disk.backing_file)
+                        break
+
+        if not shared_vmdk_paths:
+            return baselines
+
+        logger.info(f"Checking for shared disk partners ({len(shared_vmdk_paths)} shared VMDK path(s))")
+
+        try:
+            vmdk_to_vms = self.client.find_shared_disk_partners(list(shared_vmdk_paths))
+        except Exception:
+            logger.warning("Failed to query vCenter for shared disk partners, skipping auto-capture")
+            return baselines
+
+        partners_to_capture: set[str] = set()
+        for vmdk_path, vm_names in vmdk_to_vms.items():
+            for vm_name in vm_names:
+                if vm_name not in baselines:
+                    partners_to_capture.add(vm_name)
+                    logger.info(
+                        f"Discovered shared disk partner: VM '{vm_name}' "
+                        f"shares VMDK '{vmdk_path}'"
+                    )
+
+        if not partners_to_capture:
+            logger.info("All shared disk partners already captured")
+            return baselines
+
+        logger.info(f"Auto-capturing {len(partners_to_capture)} shared disk partner(s): {sorted(partners_to_capture)}")
+
+        for partner_name in sorted(partners_to_capture):
+            try:
+                if power_manager:
+                    baselines[partner_name] = self.capture_with_power_on(partner_name, power_manager)
+                else:
+                    baselines[partner_name] = self.capture(partner_name)
+            except (ValueError, TimeoutError) as exc:
+                logger.warning(f"Failed to capture shared disk partner VM '{partner_name}': {exc}")
 
         return baselines

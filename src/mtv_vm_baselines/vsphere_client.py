@@ -553,6 +553,80 @@ class VSphereClient:
 
         return result
 
+    def find_shared_disk_partners(self, vmdk_paths: list[str]) -> dict[str, list[str]]:
+        """Find all VMs in vCenter that reference the given VMDK backing files.
+
+        Uses PropertyCollector for efficient bulk lookup — a single API call
+        retrieves disk backing info for all VMs in the inventory.
+
+        Args:
+            vmdk_paths: List of VMDK backing file paths to search for.
+
+        Returns:
+            Dict mapping VMDK path to list of VM names that reference it.
+            Only includes paths that are referenced by at least one VM.
+        """
+        if not vmdk_paths:
+            return {}
+
+        target_paths = set(vmdk_paths)
+        content = self._content
+
+        # Use PropertyCollector to fetch VM name and device config in bulk
+        container = content.viewManager.CreateContainerView(
+            content.rootFolder, [vim.VirtualMachine], True
+        )
+        try:
+            traversal_spec = vim.PropertyCollector.TraversalSpec(
+                name="traverseEntities",
+                path="view",
+                skip=False,
+                type=vim.view.ContainerView,
+            )
+            obj_spec = vim.PropertyCollector.ObjectSpec(
+                obj=container,
+                selectSet=[traversal_spec],
+            )
+            prop_spec = vim.PropertyCollector.PropertySpec(
+                type=vim.VirtualMachine,
+                pathSet=["name", "config.hardware.device"],
+            )
+            filter_spec = vim.PropertyCollector.FilterSpec(
+                objectSet=[obj_spec],
+                propSet=[prop_spec],
+            )
+
+            result = content.propertyCollector.RetrieveContents([filter_spec])
+        finally:
+            container.Destroy()
+
+        vmdk_to_vms: dict[str, list[str]] = {}
+
+        for obj in result:
+            if not obj.propSet:
+                continue
+            vm_name = ""
+            devices = []
+            for prop in obj.propSet:
+                if prop.name == "name":
+                    vm_name = prop.val
+                elif prop.name == "config.hardware.device":
+                    devices = prop.val
+
+            if not vm_name or not devices:
+                continue
+
+            for device in devices:
+                if not isinstance(device, vim.vm.device.VirtualDisk):
+                    continue
+                if not device.backing or not hasattr(device.backing, "fileName"):
+                    continue
+                backing_file = device.backing.fileName or ""
+                if backing_file in target_paths:
+                    vmdk_to_vms.setdefault(backing_file, []).append(vm_name)
+
+        return vmdk_to_vms
+
 
 def _is_storage_controller(device: Any) -> bool:
     """Check if a device is a storage controller (SCSI, AHCI, NVMe).

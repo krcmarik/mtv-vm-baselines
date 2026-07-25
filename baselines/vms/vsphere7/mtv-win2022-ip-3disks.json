@@ -1,30 +1,30 @@
 {
   "meta": {
-    "vm_name": "mtv-win2019-3disks",
-    "baseline_version": "1.2",
-    "captured_at": "2026-06-08T21:29:00.044953+00:00",
+    "vm_name": "mtv-win2022-ip-3disks",
+    "baseline_version": "1.3",
+    "captured_at": "2026-07-25T01:39:25.637203+00:00",
     "description": ""
   },
   "guest_os": {
-    "guest_id": "windows8Server64Guest",
-    "guest_full_name": "Microsoft Windows Server 2012 (64-bit)",
+    "guest_id": "windows2019srv_64Guest",
+    "guest_full_name": "Microsoft Windows Server 2019 (64-bit)",
     "os_family": "windowsGuest"
   },
   "hardware": {
     "hw_version": "vmx-17",
-    "firmware": "bios",
+    "firmware": "efi",
     "num_cpu": 2,
     "memory_mb": 2048
   },
   "storage": {
     "controllers": [
       {
-        "type": "vim.vm.device.VirtualLsiLogicSASController",
+        "type": "vim.vm.device.VirtualAHCIController",
         "bus_number": 0,
         "bus_sharing": "noSharing"
       },
       {
-        "type": "vim.vm.device.VirtualAHCIController",
+        "type": "vim.vm.device.VirtualNVMEController",
         "bus_number": 0,
         "bus_sharing": "noSharing"
       }
@@ -32,17 +32,17 @@
     "disks": [
       {
         "label": "Hard disk 1",
-        "capacity_gb": 13.0,
+        "capacity_gb": 16.0,
         "controller_bus": 0,
-        "unit_number": 0,
+        "unit_number": 1,
         "provisioning": "thin",
         "disk_mode": "persistent"
       },
       {
         "label": "Hard disk 2",
-        "capacity_gb": 4.0,
+        "capacity_gb": 2.0,
         "controller_bus": 0,
-        "unit_number": 1,
+        "unit_number": 2,
         "provisioning": "thin",
         "disk_mode": "persistent"
       },
@@ -50,7 +50,7 @@
         "label": "Hard disk 3",
         "capacity_gb": 1.0,
         "controller_bus": 0,
-        "unit_number": 2,
+        "unit_number": 3,
         "provisioning": "thin",
         "disk_mode": "persistent"
       }
@@ -62,14 +62,21 @@
         "label": "Network adapter 1",
         "adapter_type": "vim.vm.device.VirtualE1000e",
         "network_name": "VM Network",
-        "mac_address": "00:50:56:88:b2:2a",
+        "mac_address": "00:50:56:b4:bb:59",
+        "address_type": "assigned"
+      },
+      {
+        "label": "Network adapter 2",
+        "adapter_type": "vim.vm.device.VirtualE1000e",
+        "network_name": "VMMCDB112",
+        "mac_address": "00:50:56:b4:d4:d4",
         "address_type": "assigned"
       },
       {
         "label": "Network adapter 3",
         "adapter_type": "vim.vm.device.VirtualE1000e",
-        "network_name": "VM Test Network",
-        "mac_address": "00:50:56:88:51:da",
+        "network_name": "VMMCDP101",
+        "mac_address": "00:50:56:b4:e0:fc",
         "address_type": "assigned"
       }
     ]
@@ -77,13 +84,34 @@
   "advanced": {
     "cbt_enabled": true
   },
+  "security_features": {
+    "vbs_enabled": true,
+    "tpm_present": false,
+    "efi_secure_boot_enabled": true
+  },
   "guest_runtime": {
     "ip_config": [
       {
         "nic_label": "Network adapter 1",
         "ip_addresses": [
           {
-            "address": "2620:52:9:162e:2121:d8f8:b121:836a",
+            "address": "2620:52:9:162e:2c26:aeb:3916:e113",
+            "prefix_length": 64,
+            "origin": "linklayer"
+          },
+          {
+            "address": "10.6.46.167",
+            "prefix_length": 24,
+            "origin": "dhcp"
+          }
+        ],
+        "gateway": "10.6.46.254"
+      },
+      {
+        "nic_label": "Network adapter 2",
+        "ip_addresses": [
+          {
+            "address": "2620:52:9:162e:fe36:3ee3:4a52:a907",
             "prefix_length": 64,
             "origin": "linklayer"
           },
@@ -93,19 +121,19 @@
             "origin": "dhcp"
           }
         ],
-        "gateway": "10.6.46.254"
+        "gateway": ""
       },
       {
         "nic_label": "Network adapter 3",
         "ip_addresses": [
           {
-            "address": "2620:52:9:162e:250f:2307:ece2:61a5",
-            "prefix_length": 64,
-            "origin": "linklayer"
+            "address": "10.2.122.67",
+            "prefix_length": 23,
+            "origin": "manual"
           },
           {
-            "address": "192.168.190.101",
-            "prefix_length": 24,
+            "address": "10.2.122.68",
+            "prefix_length": 23,
             "origin": "manual"
           }
         ],

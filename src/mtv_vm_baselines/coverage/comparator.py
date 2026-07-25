@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+import typer
+
 # Severity ordering for sorting (most severe first)
 _SEVERITY_ORDER = {"critical": 0, "warning": 1, "info": 2}
 
@@ -318,7 +320,7 @@ class CoverageComparator:
             Multi-line string report grouped by severity.
         """
         if not diffs:
-            return "No coverage differences detected."
+            return typer.style("No coverage differences detected.", fg=typer.colors.GREEN)
 
         sections: dict[str, list[CoverageDiff]] = {
             "critical": [],
@@ -334,9 +336,15 @@ class CoverageComparator:
         lines.append("=" * 60)
 
         severity_headers = {
-            "critical": "CRITICAL (coverage lost)",
-            "warning": "WARNING (review needed)",
-            "info": "INFO (coverage gained)",
+            "critical": typer.style("--- CRITICAL (coverage lost) ---", fg=typer.colors.RED, bold=True),
+            "warning": typer.style("--- WARNING (review needed) ---", fg=typer.colors.YELLOW),
+            "info": typer.style("--- INFO (coverage gained) ---", fg=typer.colors.GREEN),
+        }
+
+        severity_tag_colors = {
+            "critical": typer.colors.RED,
+            "warning": typer.colors.YELLOW,
+            "info": typer.colors.GREEN,
         }
 
         for severity in ("critical", "warning", "info"):
@@ -345,9 +353,15 @@ class CoverageComparator:
                 continue
 
             lines.append("")
-            lines.append(f"--- {severity_headers[severity]} ---")
+            lines.append(severity_headers[severity])
             for diff in items:
-                lines.append(f"  [{diff.change_type.upper()}] {diff.test_name}")
+                if diff.change_type == "removed":
+                    tag = typer.style(f"[{diff.change_type.upper()}]", fg=typer.colors.RED)
+                elif diff.change_type == "added":
+                    tag = typer.style(f"[{diff.change_type.upper()}]", fg=typer.colors.GREEN)
+                else:
+                    tag = typer.style(f"[{diff.change_type.upper()}]", fg=severity_tag_colors[diff.severity])
+                lines.append(f"  {tag} {diff.test_name}")
                 lines.append(f"    {diff.description}")
 
         lines.append("")
@@ -357,8 +371,15 @@ class CoverageComparator:
         critical_count = len(sections.get("critical", []))
         warning_count = len(sections.get("warning", []))
         info_count = len(sections.get("info", []))
-        lines.append(
-            f"Total: {total} difference(s) ({critical_count} critical, {warning_count} warning, {info_count} info)"
-        )
+
+        if critical_count > 0:
+            critical_text = typer.style(f"{critical_count} critical", fg=typer.colors.RED)
+            lines.append(
+                f"Total: {total} difference(s) ({critical_text}, {warning_count} warning, {info_count} info)"
+            )
+        else:
+            lines.append(
+                f"Total: {total} difference(s) ({critical_count} critical, {warning_count} warning, {info_count} info)"
+            )
 
         return "\n".join(lines)

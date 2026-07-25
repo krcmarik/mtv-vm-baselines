@@ -84,11 +84,17 @@ def capture(
                         except (ValueError, TimeoutError) as exc:
                             logger.warning(f"Skipping VM '{vm_name}': {exc}")
 
+                    # Auto-capture shared disk partner VMs
+                    baselines = collector.find_and_capture_shared_partners(baselines, power_manager=pm)
+
                 # Detect shared disks when multiple VMs are captured
                 if len(baselines) > 1:
                     baselines = collector.detect_shared_disks(baselines)
             else:
                 baselines = collector.capture_multiple(vm_names)
+
+                # Auto-capture shared disk partner VMs
+                baselines = collector.find_and_capture_shared_partners(baselines)
 
                 # Detect shared disks when multiple VMs are captured
                 if len(baselines) > 1:

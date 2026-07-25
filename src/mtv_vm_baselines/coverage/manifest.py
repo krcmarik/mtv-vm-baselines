@@ -96,12 +96,15 @@ class CoverageManifest:
     post-migration checks are expected to run.
     """
 
-    def generate(self, mtv_api_tests_path: Path, commit_sha: str = "") -> dict[str, Any]:
+    def generate(
+        self, mtv_api_tests_path: Path, commit_sha: str = "", markers: list[str] | None = None
+    ) -> dict[str, Any]:
         """Generate a coverage manifest from the current mtv-api-tests state.
 
         Args:
             mtv_api_tests_path: Path to the mtv-api-tests repo root.
             commit_sha: Optional git commit SHA to record in the manifest.
+            markers: Optional list of markers to filter tests by (AND logic).
 
         Returns:
             Manifest dict with the following structure::
@@ -131,23 +134,34 @@ class CoverageManifest:
         tests: dict[str, Any] = {}
         for test_name, entry in sorted(inventory.items()):
             config: dict[str, Any] = entry["config"]
-            markers: list[str] = entry.get("markers", [])
+            test_markers: list[str] = entry.get("markers", [])
 
             tests[test_name] = {
                 "test_class": entry.get("class_name"),
                 "test_file": entry.get("test_file"),
                 "vms": _extract_vm_names(config),
-                "markers": markers,
+                "markers": test_markers,
                 "vm_power_state": _extract_vm_power_state(config),
                 "features": _extract_features(config),
-                "expected_checks": compute_expected_checks(config, markers),
+                "expected_checks": compute_expected_checks(config, test_markers),
             }
 
-        return {
+        if markers:
+            marker_set = set(markers)
+            tests = {
+                name: data for name, data in tests.items() if marker_set <= set(data["markers"])
+            }
+
+        manifest = {
             "manifest_version": "1.0",
             "generated_from": f"mtv-api-tests@{commit_sha}" if commit_sha else "mtv-api-tests",
             "tests": tests,
         }
+
+        if markers:
+            manifest["filtered_by_markers"] = markers
+
+        return manifest
 
     def load(self, path: Path) -> dict[str, Any]:
         """Load a manifest from a JSON file.
@@ -164,6 +178,31 @@ class CoverageManifest:
         """
         result: dict[str, Any] = json.loads(path.read_text())
         return result
+
+    @staticmethod
+    def filter_by_markers(manifest: dict[str, Any], markers: list[str]) -> dict[str, Any]:
+        """Filter an already-loaded manifest by markers.
+
+        Args:
+            manifest: The manifest dict to filter.
+            markers: List of markers to filter by (AND logic).
+
+        Returns:
+            A new manifest dict with only tests containing all specified markers.
+        """
+        marker_set = set(markers)
+        filtered_tests = {
+            name: data
+            for name, data in manifest.get("tests", {}).items()
+            if marker_set <= set(data.get("markers", []))
+        }
+
+        filtered_manifest = manifest.copy()
+        filtered_manifest["tests"] = filtered_tests
+        if markers:
+            filtered_manifest["filtered_by_markers"] = markers
+
+        return filtered_manifest
 
     def save(self, manifest: dict[str, Any], path: Path) -> None:
         """Save a manifest to a JSON file.

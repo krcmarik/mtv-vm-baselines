@@ -1,0 +1,117 @@
+{
+  "meta": {
+    "vm_name": "mtv-tests-shared-win1",
+    "baseline_version": "1.4",
+    "captured_at": "2026-07-25T03:35:11.102290+00:00",
+    "description": ""
+  },
+  "guest_os": {
+    "guest_id": "windows8Server64Guest",
+    "guest_full_name": "Microsoft Windows Server 2012 (64-bit)",
+    "os_family": "windowsGuest"
+  },
+  "hardware": {
+    "hw_version": "vmx-17",
+    "firmware": "bios",
+    "num_cpu": 2,
+    "memory_mb": 2048
+  },
+  "storage": {
+    "controllers": [
+      {
+        "type": "vim.vm.device.ParaVirtualSCSIController",
+        "bus_number": 0,
+        "bus_sharing": "noSharing"
+      },
+      {
+        "type": "vim.vm.device.ParaVirtualSCSIController",
+        "bus_number": 1,
+        "bus_sharing": "virtualSharing"
+      },
+      {
+        "type": "vim.vm.device.VirtualAHCIController",
+        "bus_number": 0,
+        "bus_sharing": "noSharing"
+      }
+    ],
+    "disks": [
+      {
+        "label": "Hard disk 1",
+        "capacity_gb": 13.0,
+        "controller_bus": 0,
+        "unit_number": 0,
+        "provisioning": "thin",
+        "disk_mode": "persistent",
+        "backing_file": "[mtv-nfs-us-v8] mtv-tests-shared-win1/mtv-tests-shared-win1_2.vmdk"
+      },
+      {
+        "label": "Hard disk 2",
+        "capacity_gb": 1.0,
+        "controller_bus": 1,
+        "unit_number": 0,
+        "provisioning": "thick-eager",
+        "disk_mode": "persistent",
+        "backing_file": "[datastore1] mtv-tests-shared-win1/mtv-tests-shared-win1.vmdk"
+      }
+    ]
+  },
+  "network": {
+    "nics": [
+      {
+        "label": "Network adapter 1",
+        "adapter_type": "vim.vm.device.VirtualE1000e",
+        "network_name": "VM Network",
+        "mac_address": "00:50:56:a6:c2:0d",
+        "address_type": "assigned"
+      }
+    ]
+  },
+  "advanced": {
+    "cbt_enabled": false
+  },
+  "security_features": {
+    "vbs_enabled": false,
+    "tpm_present": false,
+    "efi_secure_boot_enabled": false
+  },
+  "guest_runtime": {
+    "ip_config": [
+      {
+        "nic_label": "Network adapter 1",
+        "ip_addresses": [
+          {
+            "address": "2620:52:9:162e:84d3:a5a7:ee94:760e",
+            "prefix_length": 64,
+            "origin": "linklayer"
+          },
+          {
+            "address": "10.6.46.231",
+            "prefix_length": 24,
+            "origin": "dhcp"
+          }
+        ],
+        "gateway": "10.6.46.254"
+      }
+    ]
+  },
+  "shared_disk_groups": [
+    {
+      "participating_vms": [
+        "mtv-tests-shared-win1",
+        "mtv-tests-shared-win2"
+      ],
+      "scsi_positions": [
+        {
+          "vm": "mtv-tests-shared-win1",
+          "bus": 1,
+          "unit": 0
+        },
+        {
+          "vm": "mtv-tests-shared-win2",
+          "bus": 1,
+          "unit": 0
+        }
+      ]
+    }
+  ]
+}

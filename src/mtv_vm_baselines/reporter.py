@@ -6,6 +6,8 @@ import json
 import logging
 from xml.etree.ElementTree import Element, SubElement, tostring
 
+import typer
+
 from mtv_vm_baselines.comparator import DiffEntry
 
 logger = logging.getLogger(__name__)
@@ -27,18 +29,21 @@ class TextReporter:
         lines: list[str] = []
 
         if not diffs:
-            lines.append(f"PASS: VM '{vm_name}' matches baseline")
+            lines.append(typer.style(f"PASS: VM '{vm_name}' matches baseline", fg=typer.colors.GREEN))
             return "\n".join(lines)
 
         error_count = sum(1 for d in diffs if d.severity == "error")
         warning_count = sum(1 for d in diffs if d.severity == "warning")
 
-        lines.append(f"FAIL: VM '{vm_name}' has {error_count} error(s), {warning_count} warning(s)")
+        lines.append(typer.style(f"FAIL: VM '{vm_name}' has {error_count} error(s), {warning_count} warning(s)", fg=typer.colors.RED, bold=True))
         lines.append("")
 
         for diff in diffs:
-            severity_tag = "ERROR" if diff.severity == "error" else "WARN "
-            lines.append(f"  [{severity_tag}] {diff.path}")
+            if diff.severity == "error":
+                severity_tag = typer.style("[ERROR]", fg=typer.colors.RED)
+            else:
+                severity_tag = typer.style("[WARN ]", fg=typer.colors.YELLOW)
+            lines.append(f"  {severity_tag} {diff.path}")
             lines.append(f"    expected: {_format_value(diff.expected)}")
             lines.append(f"    actual:   {_format_value(diff.actual)}")
             lines.append("")
