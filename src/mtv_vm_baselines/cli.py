@@ -149,6 +149,11 @@ def verify(
         baseline = VMBaseline.model_validate_json(bf.read_text())
         baselines[baseline.meta.vm_name] = baseline
 
+    # Detect shared disks from stored baseline data so that baselines
+    # captured in separate batches still have shared_disk_groups populated.
+    if len(baselines) > 1:
+        baselines = BaselineCollector.detect_shared_disks_from_baselines(baselines)
+
     # Connect to vCenter(s) and capture live state.
     # When multiple vCenters are provided, verify each VM on ALL vCenters
     # where it exists. This detects per-vCenter drift (e.g., a VM that was
@@ -257,6 +262,10 @@ def generate(
         "baselines/coverage/test-coverage-manifest.json"
     ),
     commit_sha: Annotated[str, typer.Option(help="Git commit SHA to record")] = "",
+    marker: Annotated[
+        list[str],
+        typer.Option("--marker", "-m", help="Filter by pytest marker (AND logic, repeatable)."),
+    ] = (),  # type: ignore[assignment]
     verbose: Annotated[bool, typer.Option("--verbose", "-v", help="Enable debug logging")] = False,
 ) -> None:
     """Generate test coverage manifest from mtv-api-tests."""
@@ -269,7 +278,9 @@ def generate(
     manifest_mgr = CoverageManifest()
 
     try:
-        manifest = manifest_mgr.generate(mtv_api_tests_path=mtv_api_tests, commit_sha=commit_sha)
+        manifest = manifest_mgr.generate(
+            mtv_api_tests_path=mtv_api_tests, commit_sha=commit_sha, markers=list(marker) if marker else None
+        )
     except (FileNotFoundError, ValueError) as exc:
         typer.echo(f"Error generating manifest: {exc}", err=True)
         raise typer.Exit(code=1) from None
@@ -285,6 +296,10 @@ def coverage_verify(
     mtv_api_tests: Annotated[Path, typer.Option(help="Path to mtv-api-tests repo root")],
     baseline: Annotated[Path, typer.Option(help="Path to stored coverage manifest")],
     output_format: Annotated[str, typer.Option(help="Output format: text, json")] = "text",
+    marker: Annotated[
+        list[str],
+        typer.Option("--marker", "-m", help="Filter by pytest marker (AND logic, repeatable)."),
+    ] = (),  # type: ignore[assignment]
     verbose: Annotated[bool, typer.Option("--verbose", "-v", help="Enable debug logging")] = False,
 ) -> None:
     """Verify mtv-api-tests against stored coverage manifest.
@@ -304,12 +319,16 @@ def coverage_verify(
 
     try:
         baseline_manifest = manifest_mgr.load(baseline)
+        if marker:
+            baseline_manifest = CoverageManifest.filter_by_markers(baseline_manifest, list(marker))
     except (json.JSONDecodeError, FileNotFoundError) as exc:
         typer.echo(f"Error loading baseline: {exc}", err=True)
         raise typer.Exit(code=1) from None
 
     try:
-        current_manifest = manifest_mgr.generate(mtv_api_tests_path=mtv_api_tests)
+        current_manifest = manifest_mgr.generate(
+            mtv_api_tests_path=mtv_api_tests, markers=list(marker) if marker else None
+        )
     except (FileNotFoundError, ValueError) as exc:
         typer.echo(f"Error generating current manifest: {exc}", err=True)
         raise typer.Exit(code=1) from None

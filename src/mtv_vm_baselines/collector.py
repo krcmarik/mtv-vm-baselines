@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 
 from mtv_vm_baselines.models import (
     BaselineMeta,
+    SecurityFeatures,
     SharedDiskGroup,
     SharedDiskPosition,
     VMBaseline,
@@ -56,6 +57,9 @@ class BaselineCollector:
         storage = self.client.get_storage(vm)
         network = self.client.get_network(vm)
         advanced = self.client.get_advanced_config(vm)
+        security_features = (
+            self.client.get_security_features(vm) if guest_os.os_family == "windowsGuest" else SecurityFeatures()
+        )
         guest_runtime = self.client.get_guest_network_info(vm)
 
         meta = BaselineMeta(
@@ -71,6 +75,7 @@ class BaselineCollector:
             storage=storage,
             network=network,
             advanced=advanced,
+            security_features=security_features,
             guest_runtime=guest_runtime,
         )
 
@@ -209,5 +214,101 @@ class BaselineCollector:
             for vm_name in participating_vms:
                 if vm_name in baselines:
                     baselines[vm_name].shared_disk_groups.append(group)
+
+        return baselines
+
+    @staticmethod
+    def _are_groups_equivalent(group1: SharedDiskGroup, group2: SharedDiskGroup) -> bool:
+        """Check if two SharedDiskGroup objects are equivalent.
+
+        Two groups are equivalent if they have the same participating VMs
+        and the same SCSI positions.
+
+        Args:
+            group1: First SharedDiskGroup to compare.
+            group2: Second SharedDiskGroup to compare.
+
+        Returns:
+            True if groups are equivalent, False otherwise.
+        """
+        # Compare participating VMs (order doesn't matter, both are sorted lists)
+        if group1.participating_vms != group2.participating_vms:
+            return False
+
+        # Compare SCSI positions (order doesn't matter, so compare as sets)
+        # Convert to tuples for set comparison since SharedDiskPosition is not hashable
+        positions1 = {(p.vm, p.bus, p.unit) for p in group1.scsi_positions}
+        positions2 = {(p.vm, p.bus, p.unit) for p in group2.scsi_positions}
+
+        return positions1 == positions2
+
+    @staticmethod
+    def detect_shared_disks_from_baselines(baselines: dict[str, VMBaseline]) -> dict[str, VMBaseline]:
+        """Detect shared disk groups from stored baseline data.
+
+        Cross-references VMDK backing file paths stored in each VM's disk
+        entries. Unlike detect_shared_disks(), this does not require a
+        vSphere connection.
+
+        Args:
+            baselines: Dict of vm_name -> VMBaseline loaded from files.
+
+        Returns:
+            Updated baselines with shared_disk_groups populated.
+        """
+        if len(baselines) < 2:
+            return baselines
+
+        vmdk_map: dict[str, list[tuple[str, int, int]]] = {}
+
+        for vm_name, baseline in baselines.items():
+            for disk in baseline.storage.disks:
+                if not disk.backing_file:
+                    continue
+                vmdk_map.setdefault(disk.backing_file, []).append(
+                    (vm_name, disk.controller_bus, disk.unit_number)
+                )
+
+        shared_vmdks = {
+            path: positions
+            for path, positions in vmdk_map.items()
+            if len({vm_name for vm_name, _, _ in positions}) > 1
+        }
+
+        if not shared_vmdks:
+            logger.info("No shared disks detected in stored baselines")
+            return baselines
+
+        logger.info(f"Detected {len(shared_vmdks)} shared disk group(s) in stored baselines")
+
+        for vmdk_path, positions in shared_vmdks.items():
+            participating_vms = sorted({vm_name for vm_name, _, _ in positions})
+            scsi_positions = [
+                SharedDiskPosition(vm=vm_name, bus=bus, unit=unit)
+                for vm_name, bus, unit in positions
+            ]
+
+            group = SharedDiskGroup(
+                participating_vms=participating_vms,
+                scsi_positions=scsi_positions,
+            )
+
+            logger.info(
+                f"Shared disk group (from baselines): VMDK='{vmdk_path}', "
+                f"VMs={participating_vms}, "
+                f"positions={[(p.vm, p.bus, p.unit) for p in scsi_positions]}"
+            )
+
+            for vm_name in participating_vms:
+                if vm_name in baselines:
+                    # Check if this group already exists in the baseline
+                    existing_groups = baselines[vm_name].shared_disk_groups
+                    if not any(BaselineCollector._are_groups_equivalent(group, existing) for existing in existing_groups):
+                        baselines[vm_name].shared_disk_groups.append(group)
+                    else:
+                        logger.debug(
+                            f"Skipping duplicate shared disk group for VM '{vm_name}': "
+                            f"group already exists with VMs={participating_vms}"
+                        )
 
         return baselines

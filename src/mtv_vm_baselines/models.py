@@ -9,7 +9,7 @@ class BaselineMeta(BaseModel):
     """Metadata about when and how a baseline was captured."""
 
     vm_name: str
-    baseline_version: str = "1.2"
+    baseline_version: str = "1.4"
     captured_at: str = ""  # ISO 8601 timestamp
     description: str = ""
 
@@ -48,6 +48,7 @@ class Disk(BaseModel):
     unit_number: int
     provisioning: str  # "thin", "thick-lazy", "thick-eager"
     disk_mode: str  # "persistent", "independent_persistent", etc.
+    backing_file: str = ""  # VMDK backing file path (e.g., "[datastore] path/to/disk.vmdk")
 
 
 class Storage(BaseModel):
@@ -116,6 +117,14 @@ class SharedDiskGroup(BaseModel):
     scsi_positions: list[SharedDiskPosition] = Field(default_factory=list)
 
 
+class SecurityFeatures(BaseModel):
+    """Windows security features (VBS, TPM, Secure Boot)."""
+
+    vbs_enabled: bool = False
+    tpm_present: bool = False
+    efi_secure_boot_enabled: bool = False
+
+
 class VMBaseline(BaseModel):
     """Complete VM configuration baseline."""
 
@@ -125,5 +134,6 @@ class VMBaseline(BaseModel):
     storage: Storage
     network: Network
     advanced: AdvancedConfig = AdvancedConfig()
+    security_features: SecurityFeatures = SecurityFeatures()
     guest_runtime: GuestRuntime = GuestRuntime()
     shared_disk_groups: list[SharedDiskGroup] = Field(default_factory=list)

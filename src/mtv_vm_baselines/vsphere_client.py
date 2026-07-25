@@ -20,6 +20,7 @@ from mtv_vm_baselines.models import (
     IPAddress,
     Network,
     NICIPConfig,
+    SecurityFeatures,
     Storage,
     StorageController,
 )
@@ -237,6 +238,11 @@ class VSphereClient:
                 # Determine disk mode
                 disk_mode = _get_disk_mode(device)
 
+                # Extract backing file path
+                backing_file = ""
+                if device.backing and hasattr(device.backing, "fileName"):
+                    backing_file = device.backing.fileName or ""
+
                 disks.append(
                     Disk(
                         label=label,
@@ -245,6 +251,7 @@ class VSphereClient:
                         unit_number=unit_number,
                         provisioning=provisioning,
                         disk_mode=disk_mode,
+                        backing_file=backing_file,
                     )
                 )
 
@@ -356,6 +363,36 @@ class VSphereClient:
         cbt_enabled = bool(config.changeTrackingEnabled)
 
         return AdvancedConfig(cbt_enabled=cbt_enabled)
+
+    def get_security_features(self, vm: vim.VirtualMachine) -> SecurityFeatures:
+        """Extract Windows security features (VBS, TPM, Secure Boot).
+
+        Args:
+            vm: The vSphere VM managed object.
+
+        Returns:
+            SecurityFeatures model with VBS, TPM, and Secure Boot state.
+
+        Raises:
+            ValueError: If VM config is not accessible.
+        """
+        config = vm.config
+        if not config:
+            raise ValueError(f"No config found for VM '{vm.name}'")
+
+        vbs_enabled = bool(getattr(config.flags, "vbsEnabled", False)) if config.flags else False
+
+        tpm_present = any(isinstance(device, vim.vm.device.VirtualTPM) for device in config.hardware.device)
+
+        efi_secure_boot = False
+        if config.bootOptions:
+            efi_secure_boot = bool(getattr(config.bootOptions, "efiSecureBootEnabled", False))
+
+        return SecurityFeatures(
+            vbs_enabled=vbs_enabled,
+            tpm_present=tpm_present,
+            efi_secure_boot_enabled=efi_secure_boot,
+        )
 
     def get_guest_network_info(self, vm: vim.VirtualMachine) -> GuestRuntime:
         """Extract guest network info from VMware Tools runtime data.
