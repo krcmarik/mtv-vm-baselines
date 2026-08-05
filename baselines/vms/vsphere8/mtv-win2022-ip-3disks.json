@@ -1,8 +1,8 @@
 {
   "meta": {
     "vm_name": "mtv-win2022-ip-3disks",
-    "baseline_version": "1.3",
-    "captured_at": "2026-07-25T02:03:16.994858+00:00",
+    "baseline_version": "1.5",
+    "captured_at": "2026-08-05T20:00:02.442666+00:00",
     "description": ""
   },
   "guest_os": {
@@ -36,7 +36,8 @@
         "controller_bus": 0,
         "unit_number": 1,
         "provisioning": "thin",
-        "disk_mode": "persistent"
+        "disk_mode": "persistent",
+        "backing_file": "[mtv-nfs-psi-rdu2-v8] mtv-win2022-ip-3disks/mtv-win2022-ip-3disks.vmdk"
       },
       {
         "label": "Hard disk 2",
@@ -44,7 +45,8 @@
         "controller_bus": 0,
         "unit_number": 2,
         "provisioning": "thin",
-        "disk_mode": "persistent"
+        "disk_mode": "persistent",
+        "backing_file": "[mtv-nfs-psi-rdu2-v8] mtv-win2022-ip-3disks/mtv-win2022-ip-3disks_1.vmdk"
       },
       {
         "label": "Hard disk 3",
@@ -52,7 +54,8 @@
         "controller_bus": 0,
         "unit_number": 3,
         "provisioning": "thin",
-        "disk_mode": "persistent"
+        "disk_mode": "persistent",
+        "backing_file": "[mtv-nfs-psi-rdu2-v8] mtv-win2022-ip-3disks/mtv-win2022-ip-3disks_2.vmdk"
       }
     ]
   },
@@ -98,14 +101,15 @@
             "address": "2620:52:9:162e:4e10:8e91:fa27:6143",
             "prefix_length": 64,
             "origin": "linklayer"
-          },
-          {
-            "address": "10.6.46.155",
-            "prefix_length": 24,
-            "origin": "dhcp"
           }
         ],
-        "gateway": "10.6.46.254"
+        "gateway": "10.2.118.1",
+        "dns_servers": [
+          "10.11.5.160",
+          "10.2.70.215",
+          "10.2.114.201",
+          "10.2.114.202"
+        ]
       },
       {
         "nic_label": "Network adapter 2",
@@ -114,14 +118,15 @@
             "address": "2620:52:9:162e:af40:cfe1:dc12:53d9",
             "prefix_length": 64,
             "origin": "linklayer"
-          },
-          {
-            "address": "10.6.46.231",
-            "prefix_length": 24,
-            "origin": "dhcp"
           }
         ],
-        "gateway": ""
+        "gateway": "",
+        "dns_servers": [
+          "10.11.5.160",
+          "10.2.70.215",
+          "10.2.114.201",
+          "10.2.114.202"
+        ]
       },
       {
         "nic_label": "Network adapter 3",
@@ -137,7 +142,13 @@
             "origin": "manual"
           }
         ],
-        "gateway": ""
+        "gateway": "",
+        "dns_servers": [
+          "10.11.5.160",
+          "10.2.70.215",
+          "10.2.114.201",
+          "10.2.114.202"
+        ]
       }
     ]
   },

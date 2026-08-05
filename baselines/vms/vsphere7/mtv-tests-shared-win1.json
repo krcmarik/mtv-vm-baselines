@@ -1,8 +1,8 @@
 {
   "meta": {
     "vm_name": "mtv-tests-shared-win1",
-    "baseline_version": "1.4",
-    "captured_at": "2026-07-25T04:11:54.852508+00:00",
+    "baseline_version": "1.5",
+    "captured_at": "2026-08-05T20:46:21.767487+00:00",
     "description": ""
   },
   "guest_os": {
@@ -90,7 +90,11 @@
             "origin": "dhcp"
           }
         ],
-        "gateway": "10.6.46.254"
+        "gateway": "10.6.46.254",
+        "dns_servers": [
+          "10.11.5.160",
+          "10.2.70.215"
+        ]
       }
     ]
   },
@@ -102,12 +106,12 @@
       ],
       "scsi_positions": [
         {
-          "vm": "mtv-tests-shared-win1",
+          "vm": "mtv-tests-shared-win2",
           "bus": 1,
           "unit": 0
         },
         {
-          "vm": "mtv-tests-shared-win2",
+          "vm": "mtv-tests-shared-win1",
           "bus": 1,
           "unit": 0
         }

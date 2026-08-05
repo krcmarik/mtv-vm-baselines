@@ -1,8 +1,8 @@
 {
   "meta": {
     "vm_name": "mtv-feature-shared-rhel2",
-    "baseline_version": "1.4",
-    "captured_at": "2026-07-25T04:10:36.184360+00:00",
+    "baseline_version": "1.5",
+    "captured_at": "2026-08-05T20:27:59.534686+00:00",
     "description": ""
   },
   "guest_os": {
@@ -89,17 +89,16 @@
         "nic_label": "Network adapter 1",
         "ip_addresses": [
           {
-            "address": "10.6.46.181",
-            "prefix_length": 24,
-            "origin": ""
-          },
-          {
-            "address": "2620:52:9:162e:45c2:8aee:342a:67dd",
+            "address": "2620:52:9:162e:9827:604e:949f:b74b",
             "prefix_length": 64,
             "origin": ""
           }
         ],
-        "gateway": "10.6.46.254"
+        "gateway": "fe80::4a5a:d01:f431:3320",
+        "dns_servers": [
+          "10.11.5.160",
+          "10.2.70.215"
+        ]
       }
     ]
   },
@@ -111,12 +110,12 @@
       ],
       "scsi_positions": [
         {
-          "vm": "mtv-feature-shared-rhel1",
+          "vm": "mtv-feature-shared-rhel2",
           "bus": 1,
           "unit": 0
         },
         {
-          "vm": "mtv-feature-shared-rhel2",
+          "vm": "mtv-feature-shared-rhel1",
           "bus": 1,
           "unit": 0
         }

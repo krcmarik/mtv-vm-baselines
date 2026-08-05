@@ -1,8 +1,8 @@
 {
   "meta": {
     "vm_name": "mtv-feature-rhel8-2xfs",
-    "baseline_version": "1.3",
-    "captured_at": "2026-07-25T01:56:04.931770+00:00",
+    "baseline_version": "1.5",
+    "captured_at": "2026-08-05T20:22:25.662115+00:00",
     "description": ""
   },
   "guest_os": {
@@ -36,7 +36,8 @@
         "controller_bus": 0,
         "unit_number": 0,
         "provisioning": "thin",
-        "disk_mode": "persistent"
+        "disk_mode": "persistent",
+        "backing_file": "[mtv-nfs-us-v7] mtv-feature-rhel8-2xfs/mtv-feature-rhel8-2xfs.vmdk"
       },
       {
         "label": "Hard disk 2",
@@ -44,7 +45,8 @@
         "controller_bus": 0,
         "unit_number": 1,
         "provisioning": "thin",
-        "disk_mode": "persistent"
+        "disk_mode": "persistent",
+        "backing_file": "[mtv-nfs-us-v7] mtv-feature-rhel8-2xfs/mtv-feature-rhel8-2xfs_1.vmdk"
       }
     ]
   },
@@ -80,17 +82,16 @@
         "nic_label": "Network adapter 1",
         "ip_addresses": [
           {
-            "address": "10.6.46.160",
-            "prefix_length": 24,
-            "origin": ""
-          },
-          {
             "address": "2620:52:9:162e:3c88:cd24:fa70:dd1",
             "prefix_length": 64,
             "origin": ""
           }
         ],
-        "gateway": "10.6.46.254"
+        "gateway": "",
+        "dns_servers": [
+          "10.11.5.160",
+          "10.2.70.215"
+        ]
       },
       {
         "nic_label": "Network adapter 2",
@@ -106,7 +107,11 @@
             "origin": ""
           }
         ],
-        "gateway": ""
+        "gateway": "192.168.1.1",
+        "dns_servers": [
+          "10.11.5.160",
+          "10.2.70.215"
+        ]
       }
     ]
   },

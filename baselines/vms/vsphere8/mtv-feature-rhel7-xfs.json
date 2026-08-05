@@ -1,8 +1,8 @@
 {
   "meta": {
     "vm_name": "mtv-feature-rhel7-xfs",
-    "baseline_version": "1.3",
-    "captured_at": "2026-07-25T01:22:57.620513+00:00",
+    "baseline_version": "1.5",
+    "captured_at": "2026-08-05T19:40:37.736592+00:00",
     "description": ""
   },
   "guest_os": {
@@ -36,7 +36,8 @@
         "controller_bus": 0,
         "unit_number": 0,
         "provisioning": "thin",
-        "disk_mode": "persistent"
+        "disk_mode": "persistent",
+        "backing_file": "[mtv-nfs-us-v8] mtv-feature-rhel7-xfs/mtv-feature-rhel7-xfs-000001.vmdk"
       },
       {
         "label": "Hard disk 2",
@@ -44,7 +45,8 @@
         "controller_bus": 0,
         "unit_number": 1,
         "provisioning": "thin",
-        "disk_mode": "persistent"
+        "disk_mode": "persistent",
+        "backing_file": "[mtv-nfs-us-v8] mtv-feature-rhel7-xfs/mtv-feature-rhel7-xfs_1-000001.vmdk"
       }
     ]
   },
@@ -90,12 +92,22 @@
             "origin": ""
           }
         ],
-        "gateway": "192.168.100.1"
+        "gateway": "192.168.100.1",
+        "dns_servers": [
+          "10.11.5.160",
+          "10.2.70.215",
+          "192.168.100.10"
+        ]
       },
       {
         "nic_label": "NIC--1",
         "ip_addresses": [],
-        "gateway": ""
+        "gateway": "",
+        "dns_servers": [
+          "10.11.5.160",
+          "10.2.70.215",
+          "192.168.100.10"
+        ]
       },
       {
         "nic_label": "NIC--1",
@@ -106,13 +118,18 @@
             "origin": ""
           }
         ],
-        "gateway": ""
+        "gateway": "",
+        "dns_servers": [
+          "10.11.5.160",
+          "10.2.70.215",
+          "192.168.100.10"
+        ]
       },
       {
         "nic_label": "Network adapter 1",
         "ip_addresses": [
           {
-            "address": "10.6.46.226",
+            "address": "10.6.46.228",
             "prefix_length": 24,
             "origin": ""
           },
@@ -122,7 +139,12 @@
             "origin": ""
           }
         ],
-        "gateway": ""
+        "gateway": "",
+        "dns_servers": [
+          "10.11.5.160",
+          "10.2.70.215",
+          "192.168.100.10"
+        ]
       }
     ]
   },
