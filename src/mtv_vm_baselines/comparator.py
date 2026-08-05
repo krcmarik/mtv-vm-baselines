@@ -489,7 +489,7 @@ class BaselineComparator:
         missing = sorted(set(exp_by_addr) - set(act_by_addr))
         extra = sorted(set(act_by_addr) - set(exp_by_addr))
 
-        # Downgrade to a warning when a baseline IP with an empty origin (Linux
+        # Silently tolerate when a baseline IP with an empty origin (Linux
         # cannot distinguish static vs DHCP) is replaced by another IP within
         # the same subnet, since this likely reflects a DHCP lease change
         # rather than a real configuration drift.
@@ -513,14 +513,6 @@ class BaselineComparator:
                 except ValueError:
                     continue
 
-                diffs.append(
-                    DiffEntry(
-                        path=f"{ip_path}[address={exp_addr}]",
-                        expected=exp_ip,
-                        actual=act_by_addr[act_addr],
-                        severity="warning",
-                    )
-                )
                 # Prefix-length change within the same subnet is still an error,
                 # since it can indicate a significant routing change.
                 act_ip = act_by_addr[act_addr]
