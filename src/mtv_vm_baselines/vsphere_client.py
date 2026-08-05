@@ -420,8 +420,9 @@ class VSphereClient:
                 if isinstance(device, vim.vm.device.VirtualEthernetCard):
                     device_label_map[device.key] = device.deviceInfo.label if device.deviceInfo else f"NIC-{device.key}"
 
-        # Extract default gateways from ipStack
+        # Extract default gateways and DNS servers from ipStack
         default_gateways: list[str] = []
+        dns_servers: list[str] = []
         try:
             ip_stacks = vm.guest.ipStack
             if ip_stacks:
@@ -434,8 +435,12 @@ class VSphereClient:
                                 gw_addr = getattr(gateway_spec, "ipAddress", None)
                                 if gw_addr:
                                     default_gateways.append(gw_addr)
+
+                dns_config = ip_stacks[0].dnsConfig
+                if dns_config and dns_config.ipAddress:
+                    dns_servers = [str(ip) for ip in dns_config.ipAddress]
         except (AttributeError, IndexError):
-            logger.debug(f"Could not extract default gateway from ipStack for VM '{vm.name}'")
+            logger.debug(f"Could not extract default gateway or DNS servers from ipStack for VM '{vm.name}'")
 
         # Iterate vm.guest.net to build NIC IP configs
         nic_configs: list[NICIPConfig] = []
@@ -477,6 +482,7 @@ class VSphereClient:
                     nic_label=nic_label,
                     ip_addresses=ip_addresses,
                     gateway=nic_gateway,
+                    dns_servers=dns_servers,
                 )
             )
 

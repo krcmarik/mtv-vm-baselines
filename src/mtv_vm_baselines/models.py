@@ -9,7 +9,7 @@ class BaselineMeta(BaseModel):
     """Metadata about when and how a baseline was captured."""
 
     vm_name: str
-    baseline_version: str = "1.4"
+    baseline_version: str = "1.5"
     captured_at: str = ""  # ISO 8601 timestamp
     description: str = ""
 
@@ -94,6 +94,7 @@ class NICIPConfig(BaseModel):
     nic_label: str
     ip_addresses: list[IPAddress] = Field(default_factory=list)
     gateway: str = ""
+    dns_servers: list[str] = Field(default_factory=list)
 
 
 class GuestRuntime(BaseModel):

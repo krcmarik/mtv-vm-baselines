@@ -24,6 +24,9 @@ _SKIP_SECTIONS: set[str] = {"meta"}
 # Fields to skip during comparison (metadata, not functional differences)
 _SKIP_COMPARISON_FIELDS: set[str] = {"backing_file"}
 
+# IP address origins that indicate an ephemeral/auto-assigned address
+_EPHEMERAL_ORIGINS: set[str] = {"dhcp", "linklayer", "random"}
+
 # Key fields used for matching list items by canonical path.
 # Canonical path = dotted path with bracket-notation segments removed.
 # E.g., "guest_runtime.ip_config[nic_label=eth0].ip_addresses" becomes
@@ -431,6 +434,23 @@ class BaselineComparator:
                     )
                 )
 
+            exp_dns = sorted(exp_nic.get("dns_servers", []))
+            act_dns = sorted(act_nic.get("dns_servers", []))
+            if exp_dns != act_dns:
+                has_static_ip = any(
+                    ip.get("origin", "") not in _EPHEMERAL_ORIGINS
+                    for ip in exp_nic.get("ip_addresses", [])
+                    if ip.get("origin", "") != ""
+                )
+                diffs.append(
+                    DiffEntry(
+                        path=f"{nic_path}.dns_servers",
+                        expected=exp_dns,
+                        actual=act_dns,
+                        severity="error" if has_static_ip else "warning",
+                    )
+                )
+
             diffs.extend(
                 self._compare_ip_addresses(
                     nic_path,
@@ -462,8 +482,6 @@ class BaselineComparator:
         """
         diffs: list[DiffEntry] = []
         ip_path = f"{nic_path}.ip_addresses"
-
-        _EPHEMERAL_ORIGINS: set[str] = {"dhcp", "linklayer", "random"}
 
         exp_by_addr = {ip["address"]: ip for ip in expected if ip.get("origin", "") not in _EPHEMERAL_ORIGINS}
         act_by_addr = {ip["address"]: ip for ip in actual if ip.get("origin", "") not in _EPHEMERAL_ORIGINS}
