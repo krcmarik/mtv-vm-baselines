@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ipaddress
 import logging
 import re
 from dataclasses import dataclass
@@ -464,17 +465,62 @@ class BaselineComparator:
 
         _EPHEMERAL_ORIGINS: set[str] = {"dhcp", "linklayer", "random"}
 
-        exp_by_addr = {
-            ip["address"]: ip for ip in expected
-            if ip.get("origin", "") not in _EPHEMERAL_ORIGINS
-        }
-        act_by_addr = {
-            ip["address"]: ip for ip in actual
-            if ip.get("origin", "") not in _EPHEMERAL_ORIGINS
-        }
+        exp_by_addr = {ip["address"]: ip for ip in expected if ip.get("origin", "") not in _EPHEMERAL_ORIGINS}
+        act_by_addr = {ip["address"]: ip for ip in actual if ip.get("origin", "") not in _EPHEMERAL_ORIGINS}
 
         missing = sorted(set(exp_by_addr) - set(act_by_addr))
         extra = sorted(set(act_by_addr) - set(exp_by_addr))
+
+        # Downgrade to a warning when a baseline IP with an empty origin (Linux
+        # cannot distinguish static vs DHCP) is replaced by another IP within
+        # the same subnet, since this likely reflects a DHCP lease change
+        # rather than a real configuration drift.
+        matched_missing: set[str] = set()
+        matched_extra: set[str] = set()
+        for exp_addr in missing:
+            exp_ip = exp_by_addr[exp_addr]
+            if exp_ip.get("origin", "") != "":
+                continue
+            try:
+                network = ipaddress.ip_network(f"{exp_addr}/{exp_ip.get('prefix_length')}", strict=False)
+            except ValueError:
+                continue
+
+            for act_addr in extra:
+                if act_addr in matched_extra:
+                    continue
+                try:
+                    if ipaddress.ip_address(act_addr) not in network:
+                        continue
+                except ValueError:
+                    continue
+
+                diffs.append(
+                    DiffEntry(
+                        path=f"{ip_path}[address={exp_addr}]",
+                        expected=exp_ip,
+                        actual=act_by_addr[act_addr],
+                        severity="warning",
+                    )
+                )
+                # Prefix-length change within the same subnet is still an error,
+                # since it can indicate a significant routing change.
+                act_ip = act_by_addr[act_addr]
+                if exp_ip.get("prefix_length") != act_ip.get("prefix_length"):
+                    diffs.append(
+                        DiffEntry(
+                            path=f"{ip_path}[address={exp_addr}].prefix_length",
+                            expected=exp_ip.get("prefix_length"),
+                            actual=act_ip.get("prefix_length"),
+                            severity="error",
+                        )
+                    )
+                matched_missing.add(exp_addr)
+                matched_extra.add(act_addr)
+                break
+
+        missing = [addr for addr in missing if addr not in matched_missing]
+        extra = [addr for addr in extra if addr not in matched_extra]
 
         for addr in missing:
             diffs.append(
